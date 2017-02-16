@@ -33,9 +33,7 @@ namespace HotRunner
             {
                 boolstatus = true;
             }
-            //swDoc = ((ModelDoc2)(swApp.ActiveDoc));
-            //boolstatus = swDoc.Extension.SelectByID2("Line1@222", "EXTSKETCHSEGMENT", -0.022745494913465329, 0, 0, false, 0, null, 0);
-            //swDoc.ClearSelection2(true);
+            
             //boolstatus = swDoc.Extension.SelectByID2("Line1", "SKETCHSEGMENT", -0.023950509454303562, 0.00944726436442634, 0.013460865810254692, true, 0, null, 0);
             //boolstatus = swDoc.Extension.SelectByID2("Line6", "SKETCHSEGMENT", 0.0056611571475044253, 0.0069563930633148238, -0.00047254587326235262, true, 0, null, 0);
             //swDoc.ClearSelection2(true);

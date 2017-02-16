@@ -20,14 +20,16 @@ namespace HotRunner
 
         public double Z { get { return z; } }
 
-        public Point(double value)
-        { }
+        public Point(double[] value)
+        {
+            x = value[0];
+            y = value[1];
+            z = value[2];
+        }
     }
 
     public class Line
     {
-        //Color, Type, Line Font, Line Width, Layer ID, Layer Override, [Start], [End] 
-
         private double color;
 
         public double Color { get { return color; } }
@@ -51,9 +53,24 @@ namespace HotRunner
         private double layerOverride;
 
         public double LayerOverride { get { return layerOverride; } }
-                
+
+        private Point start;
+        
+        public Point Start { get { return start; } }
+
+        private Point end;
+
+        public Point End { get { return end; } }
 
         public Line(double[] value)
-        { }
+        {
+            //Color, Type, Line Font, Line Width, Layer ID, Layer Override, [Start], [End] 
+            color = value[0];
+            type = value[1];
+            font = value[2];
+            width = value[3];
+            layer = value[4];
+            layerOverride = value[5];
+        }
     }
 }
