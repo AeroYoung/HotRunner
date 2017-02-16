@@ -132,11 +132,13 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="EventHandling.cs" />
-    <Compile Include="PMPHandler.cs" />
+    <Compile Include="Model\Manifold.cs" />
+    <Compile Include="Model\PublicModel.cs" />
+    <Compile Include="View\PMPHandler.cs" />
     <Compile Include="SwAddin.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="UserPMPage.cs" />
+    <Compile Include="View\UserPMPage.cs" />
     <Compile Include="View\BtnManifoldPage.cs" />
     <EmbeddedResource Include="Picture\ToolbarLarge.bmp" />
     <EmbeddedResource Include="Picture\ToolbarSmall.bmp" />
@@ -168,9 +170,6 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Properties\" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\Lager.bmp" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

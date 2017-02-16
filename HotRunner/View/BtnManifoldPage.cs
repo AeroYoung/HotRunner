@@ -111,6 +111,21 @@ namespace HotRunner
         int Count = 0;
 
         #region Handler 接口
+        
+        /// <summary>
+        /// 关闭Page
+        /// </summary>
+        /// <param name="Reason">1:OK 2:Cancel</param>
+        public void OnClose(int Reason)
+        {
+            if (Reason == (int)swPropertyManagerPageCloseReasons_e.swPropertyManagerPageClose_Okay)
+            {
+                if (Count == 0 || swSketch == null) return;
+                
+                Manifold manifold = new Manifold(iSwApp);
+                manifold.Commit(swSketch);
+            }
+        }
 
         public bool OnSubmitSelection(int Id, object Selection, int SelType, ref string ItemText)
         {
@@ -174,21 +189,7 @@ namespace HotRunner
         {
             //throw new NotImplementedException();
         }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="Reason">1:OK 2:Cancel</param>
-        public void OnClose(int Reason)
-        {
-            if (Reason == (int)swPropertyManagerPageCloseReasons_e.swPropertyManagerPageClose_Okay)
-            {
-                if (Count == 0 || swSketch==null) return;
-
-                //TODO
-            }
-        }
-
+        
         public void OnComboboxEditChanged(int Id, string Text)
         {
             //throw new NotImplementedException();
