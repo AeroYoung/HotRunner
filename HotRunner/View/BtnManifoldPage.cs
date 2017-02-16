@@ -29,6 +29,8 @@ namespace HotRunner
         public const int selection1ID = 8;
         #endregion
 
+        #region Control
+
         public BtnManifoldPage(SwAddin addin)
         {
             userAddin = addin;
@@ -103,14 +105,25 @@ namespace HotRunner
             }
         }
 
+        #endregion
+
+        Sketch swSketch = null;
+        int Count = 0;
+
         #region Handler 接口
-        
+
         public bool OnSubmitSelection(int Id, object Selection, int SelType, ref string ItemText)
         {
-            ////throw new NotImplementedException();
+            if (Id == selection1ID)
+            {
+                //ISketch sketch1 = (ISketch)Selection;
+                Feature f = (Feature)Selection;
+                swSketch = (Sketch)f.GetSpecificFeature2();
+                
+                f.Name = "Basic";
+            }
             return true;
         }
-
 
         #region SelectionBox
 
@@ -131,7 +144,7 @@ namespace HotRunner
         
         public void OnSelectionboxListChanged(int Id, int Count)
         {
-
+            this.Count = Count;
         }
 
         #endregion
@@ -168,7 +181,12 @@ namespace HotRunner
         /// <param name="Reason">1:OK 2:Cancel</param>
         public void OnClose(int Reason)
         {
-            //MessageBox.Show("is closing:"+Reason.ToString());
+            if (Reason == (int)swPropertyManagerPageCloseReasons_e.swPropertyManagerPageClose_Okay)
+            {
+                if (Count == 0 || swSketch==null) return;
+
+                //TODO
+            }
         }
 
         public void OnComboboxEditChanged(int Id, string Text)

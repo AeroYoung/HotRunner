@@ -458,6 +458,7 @@ namespace HotRunner
             flyGroup.AddCommandItem(System.DateTime.Now.ToLongTimeString(), "test", 0, "FlyoutCommandItem1", "FlyoutEnableCommandItem1");
 
         }
+
         public int FlyoutEnable()
         {
             return 1;
@@ -500,9 +501,7 @@ namespace HotRunner
                 return false;
             }
         }
-
-
-
+        
         private bool DetachSwEvents()
         {
             try
