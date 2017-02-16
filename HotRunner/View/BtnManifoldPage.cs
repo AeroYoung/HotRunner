@@ -22,7 +22,7 @@ namespace HotRunner
         IPropertyManagerPageGroup group1;
 
         //Controls
-        IPropertyManagerPageSelectionbox selection1;
+        public PropertyManagerPageSelectionbox selection1;
 
         //Control IDs
         public const int group1ID = 0;
@@ -68,8 +68,7 @@ namespace HotRunner
             short controlType = -1;
             short align = -1;
             int options = -1;
-
-
+            
             //Add the groups
             options = (int)swAddGroupBoxOptions_e.swGroupBoxOptions_Expanded |
                       (int)swAddGroupBoxOptions_e.swGroupBoxOptions_Visible;
@@ -85,7 +84,7 @@ namespace HotRunner
             options = (int)swAddControlOptions_e.swControlOptions_Enabled |
                 (int)swAddControlOptions_e.swControlOptions_Visible;
 
-            selection1 = (IPropertyManagerPageSelectionbox)group1.AddControl(selection1ID, controlType, "Sample Selection", align, options, "Displays features selected in main view");
+            selection1 = (PropertyManagerPageSelectionbox)group1.AddControl(selection1ID, controlType, "Sample Selection", align, options, "Displays features selected in main view");
             if (selection1 != null)
             {
                 int[] filter = { (int)swSelectType_e.swSelSKETCHES };
@@ -130,14 +129,13 @@ namespace HotRunner
         /// <param name="Count"></param>
         public void OnSelectionboxListChanged(int Id, int Count)
         {
-            //MessageBox.Show(selection1.GetSelectedItemsCount().ToString());
             if (Id == selection1ID)
             {
                 //ModelDoc2 swDoc = ((ModelDoc2)(iSwApp.ActiveDoc));
                 if (Count > 0)
                 {
-                    short[] items = selection1.GetSelectedItems();
-                    MessageBox.Show(items[0].ToString());
+                    //short[] items = selection1.GetSelectedItems();
+                    MessageBox.Show(selection1.GetSelectedItemsCount().ToString());
                     
                 }
             }
