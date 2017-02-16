@@ -135,8 +135,7 @@ namespace HotRunner
                 if (Count > 0)
                 {
                     //short[] items = selection1.GetSelectedItems();
-                    MessageBox.Show(selection1.GetSelectedItemsCount().ToString());
-                    
+                    MessageBox.Show(selection1.GetSelectedItemsCount().ToString());                    
                 }
             }
         }
