@@ -29,12 +29,12 @@ namespace HotRunner
             swDoc.EditSketch();
 
             List<SketchSegment> segments = NXFunction.GetSegmentLine(swApp, sketch);
-            segments.SelectAll();
-            
+            segments.SelectAll();            
             
             boolstatus = swDoc.SketchManager.SketchOffset(0.022, true, true, false, false, true);
-            //swDoc.ClearSelection2(true);
+            
             //boolstatus = swDoc.EditRebuild3();//退出草图并重建图形
-        }
+        }        
     }
 }
+

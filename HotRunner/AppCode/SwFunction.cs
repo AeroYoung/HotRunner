@@ -77,5 +77,29 @@ namespace HotRunner
                 boolstatus = segments[i].Select(true);
             }
         }
+
+        public static void CreateCube(this SketchSegment segment, SldWorks swApp)
+        {
+            //ModelDoc2 swDoc = (ModelDoc2)swApp.ActiveDoc;
+            //bool boolstatus = false;
+
+            ////boolstatus = swDoc.Extension.SelectByID2("222", "SKETCHCONTOUR", -0.059470388531273843, 0.0546456496353378, 0.048764358261951413, true, 4, null, 0);
+            ////swDoc.ClearSelection2(true);
+            ////boolstatus = swDoc.Extension.SelectByID2("Line6@222", "EXTSKETCHSEGMENT", 0, -0.031306843580068723, 0, false, 0, null, 0);
+            ////boolstatus = swDoc.Extension.SelectByID2("222", "SKETCH", -0.059470388531273843, 0.0546456496353378, 0.048764358261951413, true, 4, null, 0);
+            ////swDoc.ISelectionManager.EnableContourSelection = true;
+            ////boolstatus = swDoc.Extension.SelectByID2("222", "SKETCHCONTOUR", -0.059470388531273843, 0.0546456496353378, 0.048764358261951413, true, 4, null, 0);
+            //Feature myFeature = null;
+            //myFeature = swDoc.FeatureManager.FeatureExtrusionThin(
+            //    true,false,true, 
+            //    0, 0,
+            //    0.01, 0.01, 
+            //    false, false, false, false, 
+            //    0, 0, 
+            //    false, false, false, false, true, 
+            //    0.022, 0.022, 
+            //    2, 0, false, 0.005, true, true);
+            //swDoc.ISelectionManager.EnableContourSelection = false;
+        }
     }
 }
