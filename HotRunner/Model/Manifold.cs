@@ -56,6 +56,7 @@ namespace HotRunner
             {
                 boolstatus = segments[i].Select(true);
             }
+            
             boolstatus = swDoc.SketchManager.SketchOffset(0.022, true, true, false, false, true);
             //swDoc.ClearSelection2(true);
             //boolstatus = swDoc.EditRebuild3();//退出草图并重建图形
