@@ -47,7 +47,8 @@ namespace HotRunner
                 
                 while (segment != null)
                 {
-                    segments.Add(segment);
+                    if(segment.GetType()==(int)swSketchSegments_e.swSketchLINE)
+                        segments.Add(segment);
                     segment = null;
                     enumSegments.Next(1, out segment, ref next);
                 }

@@ -5,7 +5,6 @@ using System.Text;
 
 namespace HotRunner
 {
-
     public class Point
     {
         private double x = 0;
@@ -26,41 +25,79 @@ namespace HotRunner
             y = value[1];
             z = value[2];
         }
+
+        public Point(double x, double y, double z)
+        {
+            this.x = x;
+            this.y = y;
+            this.z = z;
+        }
+    }
+
+    public class Vector
+    {
+        private double x = 0;
+
+        public double X { get { return x; } }
+
+        private double y = 0;
+
+        public double Y { get { return y; } }
+
+        private double z = 0;
+
+        public double Z { get { return z; } }
+
+        public Vector(double[] value)
+        {
+            x = value[0];
+            y = value[1];
+            z = value[2];
+        }
+
+        public Vector(double x, double y, double z)
+        {
+            this.x = x;
+            this.y = y;
+            this.z = z;
+        }
     }
 
     public class Line
     {
-        private double color;
+        private double color = 0;
 
         public double Color { get { return color; } }
 
-        private double type;
+        private double type = -1;
 
         public double Type { get { return type; } }
 
-        private double font;
+        private double font = 0;
 
         public double Font { get { return font; } }
 
-        private double width;
+        private double width = 0;
 
         public double Width { get { return width; } }
 
-        private double layer;
+        private double layer = -1;
 
         public double Layer { get { return layer; } }
 
-        private double layerOverride;
+        private double layerOverride = 0;
 
         public double LayerOverride { get { return layerOverride; } }
 
-        private Point start;
+        private Point start = new Point(0,0,0);
         
         public Point Start { get { return start; } }
 
-        private Point end;
+        private Point end = new Point(0, 0, 0);
 
         public Point End { get { return end; } }
+        
+        public Vector Dir { get { return new Vector(end.X-start.X, end.Y - start.Y, end.Z - start.Z)} }       
 
         public Line(double[] value)
         {
