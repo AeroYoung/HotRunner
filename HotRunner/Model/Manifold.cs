@@ -37,7 +37,7 @@ namespace HotRunner
             swDoc.ClearSelection2(true);
             for (int i = 0; i < count; i++)
             {
-                boolstatus = swDoc.Extension.SelectByID2("", "SKETCHSEGMENT", (lines[i].Start.X+lines[i].End.X)/2, (lines[i].Start.Y + lines[i].End.Y) / 2, 0, true, 1, null, 0);
+                boolstatus = swDoc.Extension.SelectByID2("Line1", "SKETCHSEGMENT", (lines[i].Start.X+lines[i].End.X)/2, (lines[i].Start.Y + lines[i].End.Y) / 2, 0, true, 1, null, 0);
             }
             //boolstatus = swDoc.Extension.SelectByID2("Line1", "SKETCHSEGMENT", -0.023950509454303562, 0.00944726436442634, 0.013460865810254692, false, 1, null, 0);
             //boolstatus = swDoc.Extension.SelectByID2("Line6", "SKETCHSEGMENT", 0.0056611571475044253, 0.0069563930633148238, -0.00047254587326235262, true, 1, null, 0);
