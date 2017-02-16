@@ -26,14 +26,22 @@ namespace HotRunner
 
             bool boolstatus = swDoc.Extension.SelectByID2(fet.Name, "SKETCH", 0, 0, 0, false, 0, null, 0);
 
-            swDoc.EditSketch();
+            //swDoc.EditSketch();
 
             List<SketchSegment> segments = NXFunction.GetSegmentLine(swApp, sketch);
-            segments.SelectAll();            
+            for (int i = 0; i < segments.Count; i++)
+            {
+                segments[i].Select(true);
+                //boolstatus = swDoc.Extension.SelectByID2(fet.Name, "SKETCH", 0, 0, 0, false, 0, null, 0);
+
+                segments[i].CreateCube(swApp);
+                //swDoc.ClearSelection2(true);
+            }
+            //segments.SelectAll();            
             
-            boolstatus = swDoc.SketchManager.SketchOffset(0.022, true, true, false, false, true);
+            //boolstatus = swDoc.SketchManager.SketchOffset(0.022, true, true, false, false, true);
             
-            //boolstatus = swDoc.EditRebuild3();//退出草图并重建图形
+            boolstatus = swDoc.EditRebuild3();//退出草图并重建图形
         }        
     }
 }

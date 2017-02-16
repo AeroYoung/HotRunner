@@ -97,7 +97,7 @@ namespace HotRunner
 
         public Point End { get { return end; } }
         
-        public Vector Dir { get { return new Vector(end.X-start.X, end.Y - start.Y, end.Z - start.Z)} }       
+        public Vector Dir { get { return new Vector(end.X - start.X, end.Y - start.Y, end.Z - start.Z); } }       
 
         public Line(double[] value)
         {
