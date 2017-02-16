@@ -91,6 +91,7 @@ namespace HotRunner
                 int[] filter = { (int)swSelectType_e.swSelSKETCHES };
                 selection1.Height = 40;
                 selection1.SetSelectionFilters(filter);
+                selection1.SingleEntityOnly = true;
             }
 
         }
@@ -102,7 +103,43 @@ namespace HotRunner
                 swPropertyPage.Show();
             }
         }
-        
+
+        #region Handler 接口
+
+        #region SelectionBox
+
+        public void OnSelectionboxCalloutCreated(int Id)
+        {
+            //throw new NotImplementedException();
+        }
+
+        public void OnSelectionboxCalloutDestroyed(int Id)
+        {
+            //throw new NotImplementedException();
+        }
+
+        public void OnSelectionboxFocusChanged(int Id)
+        {
+            //throw new NotImplementedException();
+        }
+
+        /// <summary>
+        /// selection1单选
+        /// </summary>
+        /// <param name="Id"></param>
+        /// <param name="Count"></param>
+        public void OnSelectionboxListChanged(int Id, int Count)
+        {
+            //MessageBox.Show(selection1.GetSelectedItemsCount().ToString());
+            if (Id == selection1ID)
+            {
+                ModelDoc2 swDoc = ((ModelDoc2)(iSwApp.ActiveDoc));
+                
+            }
+        }
+
+        #endregion
+
         public void AfterActivation()
         {
             //throw new NotImplementedException();
@@ -231,27 +268,7 @@ namespace HotRunner
         {
             throw new NotImplementedException();
         }
-
-        public void OnSelectionboxCalloutCreated(int Id)
-        {
-            throw new NotImplementedException();
-        }
-
-        public void OnSelectionboxCalloutDestroyed(int Id)
-        {
-            throw new NotImplementedException();
-        }
-
-        public void OnSelectionboxFocusChanged(int Id)
-        {
-            throw new NotImplementedException();
-        }
-
-        public void OnSelectionboxListChanged(int Id, int Count)
-        {
-            MessageBox.Show(selection1.GetSelectedItemsCount().ToString());
-        }
-
+        
         public void OnSliderPositionChanged(int Id, double Value)
         {
             throw new NotImplementedException();
@@ -291,5 +308,7 @@ namespace HotRunner
         {
             throw new NotImplementedException();
         }
+
+        #endregion
     }
 }
