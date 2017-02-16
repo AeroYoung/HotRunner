@@ -71,6 +71,8 @@ namespace HotRunner
             width = value[3];
             layer = value[4];
             layerOverride = value[5];
+            start = new Point(new double[] { value[6], value[7], value[8] });
+            end = new Point(new double[] { value[9], value[10], value[11] });
         }
     }
 }
