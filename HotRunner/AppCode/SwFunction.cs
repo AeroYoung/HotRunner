@@ -8,12 +8,12 @@ using System.Text;
 using System.Windows.Forms;
 namespace HotRunner
 {
-    public static class SwFunction
+    public static class NXFunction
     {
         /// <summary>
         /// 从数组中获得Line
         /// </summary>
-        /// <param name="value">数组</param>
+        /// <param name="value">数组 Sketch.GetLines2</param>
         /// <param name="count">数量</param>
         /// <returns></returns>
         public static List<Line> GetLines(double[] value, int count)
@@ -31,6 +31,51 @@ namespace HotRunner
             }
 
             return result;
+        }
+
+        /// <summary>
+        /// 得到草图线段中的直线
+        /// </summary>
+        /// <param name="swApp"></param>
+        /// <param name="sketch">草图</param>
+        /// <returns></returns>
+        public static List<SketchSegment> GetSegmentLine(SldWorks swApp,Sketch sketch)
+        {
+            ModelDoc2 swDoc = (ModelDoc2)swApp.ActiveDoc;
+            SelectionMgr swSelMgr = (SelectionMgr)swDoc.SelectionManager;
+
+            List<SketchSegment> segments = new List<SketchSegment>();
+            //SelectData data = swSelMgr.CreateSelectData();            
+            EnumSketchSegments enumSegments = sketch.IEnumSketchSegments();
+            if (enumSegments != null)
+            {
+                SketchSegment segment;
+                int next = 1;
+                enumSegments.Next(1, out segment, ref next);
+
+                while (segment != null)
+                {
+                    if (segment.GetType() == (int)swSketchSegments_e.swSketchLINE)
+                        segments.Add(segment);
+                    segment = null;
+                    enumSegments.Next(1, out segment, ref next);
+                }
+            }
+
+            return segments;
+        }
+
+        /// <summary>
+        /// 线段全部加入选择集
+        /// </summary>
+        /// <param name="segments"></param>
+        public static void SelectAll(this List<SketchSegment> segments)
+        {
+            bool boolstatus = false;
+            for (int i = 0; i < segments.Count; i++)
+            {
+                boolstatus = segments[i].Select(true);
+            }
         }
     }
 }
