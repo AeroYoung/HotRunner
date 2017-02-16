@@ -24,22 +24,22 @@ namespace HotRunner
             ModelDoc2 swDoc = null;
             bool boolstatus = false;
             swDoc = ((ModelDoc2)(swApp.ActiveDoc));
-            //swDoc.ClearSelection2(true);
-            //swDoc.SetPickMode();
-            //boolstatus = swDoc.Extension.SelectByID2(fet.Name, "SKETCH", 0, 0, 0, false, 0, null, 0);
-            //swDoc.ActivateSelectedFeature();
+            
+            boolstatus = swDoc.Extension.SelectByID2(fet.Name, "SKETCH", 0, 0, 0, false, 0, null, 0);
+            swDoc.EditSketch();
+            swDoc.ClearSelection2(true);
 
-            //////获得所有线段
-            ////double[] linesValue = sketch.GetLines2((short)swCrossHatchFilter_e.swCrossHatchExclude);
-            ////int count = sketch.GetLineCount2((short)swCrossHatchFilter_e.swCrossHatchExclude);
-            ////List<Line> lines = SwFunction.GetLines(linesValue,count);
+            //获得所有线段
+            double[] linesValue = sketch.GetLines2((short)swCrossHatchFilter_e.swCrossHatchExclude);
+            int count = sketch.GetLineCount2((short)swCrossHatchFilter_e.swCrossHatchExclude);
+            List<Line> lines = SwFunction.GetLines(linesValue, count);
 
-            //swDoc.ClearSelection2(true);
-            //boolstatus = swDoc.Extension.SelectByID2("Line1", "SKETCHSEGMENT", -0.023950509454303562, 0.00944726436442634, 0.013460865810254692, false, 1, null, 0);
-            //boolstatus = swDoc.Extension.SelectByID2("Line6", "SKETCHSEGMENT", 0.0056611571475044253, 0.0069563930633148238, -0.00047254587326235262, true, 1, null, 0);
-            //boolstatus = swDoc.SketchManager.SketchOffset(0.022, true, true, false, false, true);
-            //swDoc.ClearSelection2(true);
-            //swDoc.SketchManager.InsertSketch(true);
+            swDoc.ClearSelection2(true);
+            boolstatus = swDoc.Extension.SelectByID2("Line1", "SKETCHSEGMENT", -0.023950509454303562, 0.00944726436442634, 0.013460865810254692, false, 1, null, 0);
+            boolstatus = swDoc.Extension.SelectByID2("Line6", "SKETCHSEGMENT", 0.0056611571475044253, 0.0069563930633148238, -0.00047254587326235262, true, 1, null, 0);
+            boolstatus = swDoc.SketchManager.SketchOffset(0.022, true, true, false, false, true);
+            swDoc.ClearSelection2(true);
+            boolstatus = swDoc.EditRebuild3();//退出草图并重建图形
         }
     }
 }
