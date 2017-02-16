@@ -122,7 +122,7 @@ namespace HotRunner
 
         public void OnSelectionboxListChanged(int id, int item)
         {
-            MessageBox.Show(id.ToString() + "--" + item.ToString());
+            //MessageBox.Show(id.ToString() + "--" + item.ToString());
         }
 
         public void OnTextboxChanged(int id, string text)

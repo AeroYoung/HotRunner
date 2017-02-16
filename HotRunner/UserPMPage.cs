@@ -170,8 +170,8 @@ namespace HotRunner
             selection1 = (IPropertyManagerPageSelectionbox)group2.AddControl(selection1ID, controlType, "Sample Selection", align, options, "Displays features selected in main view");
             if (selection1 != null)
             {
-                //int[] filter = { (int)swSelectType_e.swSelEDGES, (int)swSelectType_e.swSelVERTICES };
-                int[] filter = { (int)swSelectType_e.swSelSKETCHES};
+                int[] filter = { (int)swSelectType_e.swSelEDGES, (int)swSelectType_e.swSelVERTICES };
+                //int[] filter = { (int)swSelectType_e.swSelSKETCHES};
                 selection1.Height = 40;
                 selection1.SetSelectionFilters(filter);
             }

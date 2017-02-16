@@ -104,6 +104,13 @@ namespace HotRunner
         }
 
         #region Handler 接口
+        
+        public bool OnSubmitSelection(int Id, object Selection, int SelType, ref string ItemText)
+        {
+            ////throw new NotImplementedException();
+            return true;
+        }
+
 
         #region SelectionBox
 
@@ -121,23 +128,10 @@ namespace HotRunner
         {
             ////throw new NotImplementedException();
         }
-
-        /// <summary>
-        /// selection1单选
-        /// </summary>
-        /// <param name="Id"></param>
-        /// <param name="Count"></param>
+        
         public void OnSelectionboxListChanged(int Id, int Count)
         {
-            if (Id == selection1ID)
-            {
-                //ModelDoc2 swDoc = ((ModelDoc2)(iSwApp.ActiveDoc));
-                if (Count > 0)
-                {
-                    //short[] items = selection1.GetSelectedItems();
-                    MessageBox.Show(selection1.GetSelectedItemsCount().ToString());                    
-                }
-            }
+
         }
 
         #endregion
@@ -285,12 +279,6 @@ namespace HotRunner
         public void OnSliderTrackingCompleted(int Id, double Value)
         {
             ////throw new NotImplementedException();
-        }
-
-        public bool OnSubmitSelection(int Id, object Selection, int SelType, ref string ItemText)
-        {
-            ////throw new NotImplementedException();
-            return true;
         }
 
         public bool OnTabClicked(int Id)
