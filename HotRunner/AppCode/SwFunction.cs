@@ -218,6 +218,34 @@ namespace HotRunner
             }
         }
 
+        /// <summary>
+        /// 是否同向
+        /// </summary>
+        /// <param name="source"></param>
+        /// <param name="target"></param>
+        /// <param name="tolerance"></param>
+        /// <returns>1 同向;2 反向;-1 其他</returns>
+        public static int isSameDir(this Vector source, Vector target, double tolerance)
+        {
+            if (Math.Abs(source.unit.X - target.unit.X) < tolerance &&
+               Math.Abs(source.unit.Y - target.unit.Y) < tolerance &&
+               Math.Abs(source.unit.Z - target.unit.Z) < tolerance)
+            {
+                return 1;
+            }
+            else if (Math.Abs(source.unit.X + target.unit.X) < tolerance &&
+               Math.Abs(source.unit.Y + target.unit.Y) < tolerance &&
+               Math.Abs(source.unit.Z + target.unit.Z) < tolerance)
+            {
+                return 2;
+            }
+            else
+            {
+                return -1;
+            }
+        }
+
+
         #endregion
     }
 }

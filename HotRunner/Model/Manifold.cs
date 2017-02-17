@@ -70,7 +70,7 @@ namespace HotRunner
             thisFet.Name = "runnerSketch"+index.ToString();
 
             swDoc.ClearSelection2(true);
-            boolstatus = swDoc.Extension.SelectByID2("thisFet.Name", "SKETCH", 0, 0, 0, false, 0, null, 0);
+            boolstatus = swDoc.Extension.SelectByID2(thisFet.Name, "SKETCH", 0, 0, 0, false, 0, null, 0);
 
             //合并，反向
             Feature myFeature = swDoc.SingleEndExtrusion(0.01,true,true);
@@ -87,16 +87,16 @@ namespace HotRunner
             ModelDoc2 swDoc = (ModelDoc2)swApp.ActiveDoc;
             Feature feature = swDoc.GetFeatureInPrt("runnerCube0");
             object[] faces = feature.GetFaces();
-            Vector target = new Vector(0, 1, 0);
+            Vector target = new Vector(0, 0, 1);
 
             for (int i = 0; i < faces.Count(); i++)
             {
                 Face2 face = (Face2)faces[i];
                 Vector normal = new Vector(face.Normal);
-                if (!normal.isParallerTo(target, 0.000005))
+                if (normal.isSameDir(target, 0.000005)!=1)
                     continue;
                 object[] edges = face.GetEdges();
-                
+                double area = face.GetArea();
                 int count = face.GetEdgeCount();
                 for (int j = 0; j < count; j++)
                 {
@@ -129,6 +129,12 @@ namespace HotRunner
             Sketch thisSketch = ikm.ActiveSketch;
             Feature thisFet = (Feature)thisSketch;
             thisFet.Name = "ManifoldSketch";
+
+            boolstatus = swDoc.Extension.SelectByID2(thisFet.Name, "SKETCH", 0, 0, 0, false, 0, null, 0);
+
+            //合并，反向
+            Feature myFeature = swDoc.SingleEndExtrusion(0.01, false, true);
+            myFeature.Name = "Manifold";
         }
 
         public void Commit2(Sketch sketch)
