@@ -41,13 +41,12 @@ namespace HotRunner
         /// <param name="swApp"></param>
         /// <param name="sketch">草图</param>
         /// <returns></returns>
-        public static List<SketchSegment> GetSegmentLine(SldWorks swApp,Sketch sketch)
+        public static List<SketchSegment> GetSegmentLine(this Sketch sketch, SldWorks swApp)
         {
             ModelDoc2 swDoc = (ModelDoc2)swApp.ActiveDoc;
             SelectionMgr swSelMgr = (SelectionMgr)swDoc.SelectionManager;
 
             List<SketchSegment> segments = new List<SketchSegment>();
-            //SelectData data = swSelMgr.CreateSelectData();            
             EnumSketchSegments enumSegments = sketch.IEnumSketchSegments();
             if (enumSegments != null)
             {
@@ -58,6 +57,37 @@ namespace HotRunner
                 while (segment != null)
                 {
                     if (segment.GetType() == (int)swSketchSegments_e.swSketchLINE)
+                        segments.Add(segment);
+                    segment = null;
+                    enumSegments.Next(1, out segment, ref next);
+                }
+            }
+
+            return segments;
+        }
+
+        /// <summary>
+        /// 得到Sketch中的圆
+        /// </summary>
+        /// <param name="swApp"></param>
+        /// <param name="sketch">草图</param>
+        /// <returns></returns>
+        public static List<SketchSegment> GetSegmentCircle(this Sketch sketch, SldWorks swApp)
+        {
+            ModelDoc2 swDoc = (ModelDoc2)swApp.ActiveDoc;
+            SelectionMgr swSelMgr = (SelectionMgr)swDoc.SelectionManager;
+
+            List<SketchSegment> segments = new List<SketchSegment>();
+            EnumSketchSegments enumSegments = sketch.IEnumSketchSegments();
+            if (enumSegments != null)
+            {
+                SketchSegment segment;
+                int next = 1;
+                enumSegments.Next(1, out segment, ref next);
+
+                while (segment != null)
+                {
+                    if (segment.GetType() == (int)swSketchSegments_e.swSketchARC)
                         segments.Add(segment);
                     segment = null;
                     enumSegments.Next(1, out segment, ref next);

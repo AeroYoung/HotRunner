@@ -13,6 +13,14 @@ namespace HotRunner
     {
         #region 分流板参数
 
+        private double runnerDiameter = 0.014;//浇口直径
+
+        public double RunnerDiameter { get { return runnerDiameter; } }
+
+        private int series = 14;//系列
+
+        public int Series { get { return series; } }
+            
         private double manifoldInsert = 0.055;//浇口到分流板壁面
 
         private double manifoldW = 0.044;//分流板宽度
@@ -25,21 +33,31 @@ namespace HotRunner
 
         SldWorks swApp = null;
 
+        Sketch basicSketch = null;//流道和点位图
+
         private List<SketchSegment> runnerSegments = new List<SketchSegment>();//流道中心线，在Commit中获取
 
         private List<Line> contourLine = new List<Line>();//计算得到的轮廓
-        
+
         #endregion
 
-        public Manifold(SldWorks swApp)
+        public Manifold(SldWorks swApp, Sketch basicSketch)
         {
             this.swApp = swApp;
+            this.basicSketch = basicSketch;
+
+            #region 获得流道直径和系列
+
+
+
+            #endregion
         }
 
-        public void Commit(Sketch sketch)
+        public void Commit()
         {
             ModelDoc2 swDoc = (ModelDoc2)swApp.ActiveDoc;
-            runnerSegments = NXFunction.GetSegmentLine(swApp, sketch);
+
+            runnerSegments = basicSketch.GetSegmentLine(swApp);
 
             if (runnerSegments.Count == 0) return;
 

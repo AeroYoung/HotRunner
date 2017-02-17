@@ -127,8 +127,8 @@ namespace HotRunner
                 {
                     if (Count == 0 || swSketch == null) return;
 
-                    Manifold manifold = new Manifold(iSwApp);
-                    manifold.Commit(swSketch);
+                    Manifold manifold = new Manifold(iSwApp, swSketch);
+                    manifold.Commit();
                 }
                 catch (Exception ex)
                 {
@@ -182,6 +182,8 @@ namespace HotRunner
         }
 
         #endregion
+
+        #region other
 
         public void AfterActivation()
         {
@@ -340,6 +342,8 @@ namespace HotRunner
             //throw new NotImplementedException();
             return 0;
         }
+
+        #endregion
 
         #endregion
     }
