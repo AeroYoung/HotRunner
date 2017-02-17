@@ -78,6 +78,11 @@ namespace HotRunner
             }
         }
 
+        /// <summary>
+        /// 薄壁拉伸
+        /// </summary>
+        /// <param name="segment"></param>
+        /// <param name="swApp"></param>
         public static void CreateCube(this SketchSegment segment, SldWorks swApp)
         {
             ModelDoc2 swDoc = (ModelDoc2)swApp.ActiveDoc;
@@ -110,8 +115,9 @@ namespace HotRunner
                 0, 
                 false, 
                 0.005, 
-                false, 
-                true,
+                false,
+                true
+                ,
                 (int)swStartConditions_e.swStartSketchPlane,
                 0.0,
                 false

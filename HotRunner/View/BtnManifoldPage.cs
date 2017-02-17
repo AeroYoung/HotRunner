@@ -22,15 +22,14 @@ namespace HotRunner
         IPropertyManagerPageGroup group1;
 
         //Controls
-        public PropertyManagerPageSelectionbox selection1;
+        PropertyManagerPageSelectionbox selection1;
+        PropertyManagerPageButton button1;
 
         //Control IDs
         public const int group1ID = 0;
         public const int selection1ID = 8;
-        #endregion
-
-        #region Control
-
+        public const int button1ID = 13;
+        
         public BtnManifoldPage(SwAddin addin)
         {
             userAddin = addin;
@@ -95,6 +94,13 @@ namespace HotRunner
                 selection1.SingleEntityOnly = true;
             }
 
+            //button1
+            controlType = (int)swPropertyManagerPageControlType_e.swControlType_Button;
+            align = (int)swPropertyManagerPageControlLeftAlign_e.swControlAlign_LeftEdge;
+            options = (int)swAddControlOptions_e.swControlOptions_Enabled |
+                (int)swAddControlOptions_e.swControlOptions_Visible;
+            button1 = (PropertyManagerPageButton)group1.AddControl(button1ID, controlType, "ReDraw", align, options, "Redraw the model");
+
         }
 
         public void Show()
@@ -120,10 +126,14 @@ namespace HotRunner
         {
             if (Reason == (int)swPropertyManagerPageCloseReasons_e.swPropertyManagerPageClose_Okay)
             {
-                if (Count == 0 || swSketch == null) return;
-                
-                Manifold manifold = new Manifold(iSwApp);
-                manifold.Commit(swSketch);
+                try
+                {
+                    
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(ex.ToString(),"错误提示");
+                }
             }
         }
 
@@ -182,7 +192,10 @@ namespace HotRunner
 
         public void OnButtonPress(int Id)
         {
-            MessageBox.Show(Id.ToString());
+            if (Count == 0 || swSketch == null) return;
+
+            Manifold manifold = new Manifold(iSwApp);
+            manifold.Commit(swSketch);
         }
 
         public void OnCheckboxCheck(int Id, bool Checked)
