@@ -11,14 +11,24 @@ namespace HotRunner
 {
     public class Manifold
     {
-        SldWorks swApp = null;
-        List<SketchSegment> segments = new List<SketchSegment>();//流道中心线，在Commit中获取
-
         #region 分流板参数
 
-        double insert = 0.055;
-        double width = 0.044;
+        private double manifoldInsert = 0.055;//浇口到分流板壁面
 
+        private double manifoldW = 0.044;//分流板宽度
+
+        private double manifoldH = 0.046;//分流板高度
+
+        #endregion
+
+        #region 公共变量
+
+        SldWorks swApp = null;
+
+        private List<SketchSegment> runnerSegments = new List<SketchSegment>();//流道中心线，在Commit中获取
+
+        private List<Line> contourLine = new List<Line>();//计算得到的轮廓
+        
         #endregion
 
         public Manifold(SldWorks swApp)
@@ -28,28 +38,62 @@ namespace HotRunner
 
         public void Commit(Sketch sketch)
         {
-            segments = NXFunction.GetSegmentLine(swApp, sketch);
+            ModelDoc2 swDoc = (ModelDoc2)swApp.ActiveDoc;
+            runnerSegments = NXFunction.GetSegmentLine(swApp, sketch);
 
-            if (segments.Count == 0) return;
-            
-            //创建临时Cube
-            for (int i = 0; i < segments.Count; i++)
+            if (runnerSegments.Count == 0) return;
+
+            ManifoldBody();
+        }
+
+        #region 1.分流板主体
+
+        private void ManifoldBody()
+        {
+            ModelDoc2 swDoc = (ModelDoc2)swApp.ActiveDoc;
+            ISketchManager ikm = swDoc.SketchManager;
+
+            #region 1.创建临时Cube
+            for (int i = 0; i < runnerSegments.Count; i++)
             {
-                CreateRunnerCube(segments[i],i);
+                CreateRunnerCube(runnerSegments[i], i);
+            }
+            #endregion
+
+            #region 2.得到边的几何数据，重新绘图
+
+            contourLine = GetManifoldEdge();
+           
+            swDoc.ClearSelection2(true);
+
+            bool boolstatus = swDoc.Extension.SelectByID2("前视基准面", "PLANE", 0, 0, 0, false, 0, null, 0);
+            ikm.InsertSketch(true);
+
+            for (int i = 0; i < contourLine.Count; i++)
+            {
+                ikm.CreateLine(contourLine[i].Start.X, contourLine[i].Start.Y, contourLine[i].Start.Z,
+                        contourLine[i].End.X, contourLine[i].End.Y, contourLine[i].End.Z);
             }
 
-            //得到边的几何数据
-            List<Line> lines = GetManifoldEdge();
+            Sketch thisSketch = ikm.ActiveSketch;
+            Feature thisFet = (Feature)thisSketch;
+            thisFet.Name = "ManifoldSketch";
 
-            NewSketch(lines);
+            boolstatus = swDoc.Extension.SelectByID2(thisFet.Name, "SKETCH", 0, 0, 0, false, 0, null, 0);
+            
+            Feature myFeature = swDoc.SingleEndExtrusion(manifoldH, false, true);
+            myFeature.Name = "Manifold";
 
-            ModelDoc2 swDoc = (ModelDoc2)swApp.ActiveDoc;
-            for (int i = segments.Count - 1; i > -1; i--)
+            #endregion
+
+            #region 3.删除临时特征
+            for (int i = runnerSegments.Count - 1; i > -1; i--)
             {
-                bool boolstatus = swDoc.Extension.SelectByID2("runnerCube" + i.ToString(), 
+                boolstatus = swDoc.Extension.SelectByID2("runnerCube" + i.ToString(),
                     "BODYFEATURE", 0, 0, 0, false, 0, null, 0);
                 swDoc.Extension.DeleteSelection2((int)swDeleteSelectionOptions_e.swDelete_Absorbed);
             }
+            #endregion
         }
 
         private void CreateRunnerCube(SketchSegment segment,int index)
@@ -65,9 +109,9 @@ namespace HotRunner
             Point centrePoint = new Point((line.Start.X + line.End.X) / 2, (line.Start.Y + line.End.Y) / 2, (line.Start.Z + line.End.Z) / 2);
             Vector dir2 = new Vector(line.dir.Y, -line.dir.X, 0);
             Point point2 = line.End;
-            point2.X += insert * line.dir.unit.X + width / 2 * dir2.unit.X;
-            point2.Y += insert * line.dir.unit.Y + width / 2 * dir2.unit.Y;
-            point2.Z += insert * line.dir.unit.Z + width / 2 * dir2.unit.Z;
+            point2.X += manifoldInsert * line.dir.unit.X + manifoldW / 2 * dir2.unit.X;
+            point2.Y += manifoldInsert * line.dir.unit.Y + manifoldW / 2 * dir2.unit.Y;
+            point2.Z += manifoldInsert * line.dir.unit.Z + manifoldW / 2 * dir2.unit.Z;
 
             swDoc.SketchManager.CreateCenterRectangle(
                 centrePoint.X, centrePoint.Y, centrePoint.Z,
@@ -119,30 +163,22 @@ namespace HotRunner
             return lines;
         }
 
-        private void NewSketch(List<Line> lines)
+        #endregion
+
+        #region 2.倒角
+
+        private void ManifoldChamfer()
         {
             ModelDoc2 swDoc = (ModelDoc2)swApp.ActiveDoc;
-            ISketchManager ikm = swDoc.SketchManager;
-            swDoc.ClearSelection2(true);
+            bool boolstatus = false;
+            
+            boolstatus = swDoc.Extension.SelectByID2("", "EDGE", 0.022298795930680626, 0.15715131653854542, -0.023204627553809587, true, 0, null, 0);
+            boolstatus = swDoc.Extension.SelectByID2("", "EDGE", 0.022823469233060223, 0.021417719320993456, -0.027173159468418362, true, 0, null, 0);
+            boolstatus = swDoc.Extension.SelectByID2("", "EDGE", 0.2480754615000933, 0.021566930129438333, -0.021339355300995067, true, 0, null, 0);
+            Feature myFeature = null;
+            myFeature = ((Feature)(swDoc.FeatureManager.InsertFeatureChamfer(4, 1, 0.01, 0.78539816339745, 0, 0, 0, 0)));
+        }
 
-            bool boolstatus = swDoc.Extension.SelectByID2("前视基准面", "PLANE", 0, 0, 0, false, 0, null, 0);
-            ikm.InsertSketch(true);
-
-            for (int i = 0; i < lines.Count; i++)
-            {
-                ikm.CreateLine(lines[i].Start.X, lines[i].Start.Y, lines[i].Start.Z,
-                        lines[i].End.X, lines[i].End.Y, lines[i].End.Z);
-            }            
-
-            Sketch thisSketch = ikm.ActiveSketch;
-            Feature thisFet = (Feature)thisSketch;
-            thisFet.Name = "ManifoldSketch";
-
-            boolstatus = swDoc.Extension.SelectByID2(thisFet.Name, "SKETCH", 0, 0, 0, false, 0, null, 0);
-
-            //合并，反向
-            Feature myFeature = swDoc.SingleEndExtrusion(0.046, false, true);//BODYFEATURE
-            myFeature.Name = "Manifold";//DeleteSelection2
-        }   
+        #endregion
     }
 }
