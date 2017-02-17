@@ -40,6 +40,13 @@ namespace HotRunner
             this.y = y;
             this.z = z;
         }
+
+        public Point(SketchPoint point)
+        {
+            this.x = point.X;
+            this.y = point.Y;
+            this.z = point.Z;
+        }
     }
 
     public class Vector
@@ -167,6 +174,14 @@ namespace HotRunner
             dir.Z *= len;
             end = new Point(start.X + dir.X, start.Y + dir.Y, start.Z + dir.Z);
             
+        }
+
+        public Line(SketchLine segment)
+        {
+            start = new Point(segment.GetStartPoint2());
+            end = new Point(segment.GetEndPoint2());
+            dir = new Vector(end.X - start.X, end.Y - start.Y, end.Z - start.Z);
+            len = Math.Sqrt(dir.X * dir.X + dir.Y * dir.Y + dir.Z * dir.Z);
         }
 
         public Line(Point start, Point end)

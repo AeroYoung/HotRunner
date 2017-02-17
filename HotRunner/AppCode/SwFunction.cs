@@ -41,12 +41,12 @@ namespace HotRunner
         /// <param name="swApp"></param>
         /// <param name="sketch">草图</param>
         /// <returns></returns>
-        public static List<SketchSegment> GetSegmentLine(this Sketch sketch, SldWorks swApp)
+        public static List<SketchLine> GetSegmentLine(this Sketch sketch, SldWorks swApp)
         {
             ModelDoc2 swDoc = (ModelDoc2)swApp.ActiveDoc;
             SelectionMgr swSelMgr = (SelectionMgr)swDoc.SelectionManager;
 
-            List<SketchSegment> segments = new List<SketchSegment>();
+            List<SketchLine> segments = new List<SketchLine>();
             EnumSketchSegments enumSegments = sketch.IEnumSketchSegments();
             if (enumSegments != null)
             {
@@ -57,13 +57,18 @@ namespace HotRunner
                 while (segment != null)
                 {
                     if (segment.GetType() == (int)swSketchSegments_e.swSketchLINE)
-                        segments.Add(segment);
+                        segments.Add((SketchLine)segment);
                     segment = null;
                     enumSegments.Next(1, out segment, ref next);
                 }
             }
 
             return segments;
+        }
+        
+        public static Line toLine(this SketchLine segment)
+        {
+            return new Line(segment);
         }
 
         /// <summary>
@@ -96,12 +101,7 @@ namespace HotRunner
 
             return segments;
         }
-
-        public static Line toLine(this SketchSegment segment)
-        {
-            return new Line(segment);
-        }
-
+        
         /// <summary>
         /// 线段全部加入选择集
         /// </summary>
@@ -227,6 +227,20 @@ namespace HotRunner
         #endregion
 
         #region 几何计算
+
+        public static bool isCoincode(this Point source, Point target,double tolerance)
+        {
+            if (Math.Abs(source.X - target.X) < tolerance &&
+               Math.Abs(source.Y - target.Y) < tolerance &&
+               Math.Abs(source.Z - target.Z) < tolerance)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
 
         public static bool isParallerTo(this Vector source, Vector target, double tolerance)
         {

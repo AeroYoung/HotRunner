@@ -35,7 +35,11 @@ namespace HotRunner
 
         Sketch basicSketch = null;//流道和点位图
 
-        private List<SketchSegment> runnerSegments = new List<SketchSegment>();//流道中心线，在Commit中获取
+        private List<SketchLine> runnerSegments = new List<SketchLine>();//流道中心线，在Commit中获取
+
+        private List<SketchArc> gateArcs = new List<SketchArc>();//出胶口
+
+        private List<Point> gatePoints = new List<Point>();
 
         private List<Line> contourLine = new List<Line>();//计算得到的轮廓
 
@@ -46,26 +50,23 @@ namespace HotRunner
             this.swApp = swApp;
             this.basicSketch = basicSketch;
 
-            #region 获得流道直径和系列
+            runnerSegments = basicSketch.GetSegmentLine(swApp);
+            gateArcs = basicSketch.GetSegmentArc(swApp);
 
-            List<SketchArc> arcs = basicSketch.GetSegmentArc(swApp);
-            for (int i = 0; i < arcs.Count; i++)
+            //获得流道直径和系列
+            for (int i = 0; i < gateArcs.Count; i++)
             {
-                if (arcs[i].IsCircle() != 1) continue;
-                runnerDiameter = arcs[i].GetRadius() * 2;
+                runnerDiameter = gateArcs[i].GetRadius() * 2;
                 series = (int)(runnerDiameter * 1000);
-                break;
-            }
 
-            #endregion
+                gatePoints.Add(new Point(gateArcs[i].GetCenterPoint2()));
+            }            
          }
 
         public void Commit()
         {
             ModelDoc2 swDoc = (ModelDoc2)swApp.ActiveDoc;
-
-            runnerSegments = basicSketch.GetSegmentLine(swApp);
-
+            
             if (runnerSegments.Count == 0) return;
 
             ManifoldBody();
@@ -121,7 +122,7 @@ namespace HotRunner
             #endregion
         }
 
-        private void CreateRunnerCube(SketchSegment segment,int index)
+        private void CreateRunnerCube(SketchLine segment,int index)
         {
             ModelDoc2 swDoc = (ModelDoc2)swApp.ActiveDoc;
             swDoc.ClearSelection2(true);
@@ -129,18 +130,56 @@ namespace HotRunner
             bool boolstatus = swDoc.Extension.SelectByID2("前视基准面", "PLANE", 0, 0, 0, false, 0, null, 0);
 
             swDoc.SketchManager.InsertSketch(true);
-            
-            Line line = segment.toLine();
-            Point centrePoint = new Point((line.Start.X + line.End.X) / 2, (line.Start.Y + line.End.Y) / 2, (line.Start.Z + line.End.Z) / 2);
-            Vector dir2 = new Vector(line.dir.Y, -line.dir.X, 0);
-            Point point2 = line.End;
-            point2.X += manifoldInsert * line.dir.unit.X + manifoldW / 2 * dir2.unit.X;
-            point2.Y += manifoldInsert * line.dir.unit.Y + manifoldW / 2 * dir2.unit.Y;
-            point2.Z += manifoldInsert * line.dir.unit.Z + manifoldW / 2 * dir2.unit.Z;
 
-            swDoc.SketchManager.CreateCenterRectangle(
-                centrePoint.X, centrePoint.Y, centrePoint.Z,
+            #region  画矩形
+
+            Line line = segment.toLine();
+            Vector dir2 = new Vector(line.dir.Y, -line.dir.X, 0);
+            Point point1 = new Point(0, 0, 0);
+            Point point2 = new Point(0, 0, 0);
+
+            if (IsCoincideWithGate(line.Start))
+            {
+                point1 = line.Start;
+                point1.X += manifoldW / 2 * dir2.unit.X - manifoldInsert * line.dir.unit.X;
+                point1.Y += manifoldW / 2 * dir2.unit.Y - manifoldInsert * line.dir.unit.Y;
+                point1.Z += manifoldW / 2 * dir2.unit.Z - manifoldInsert * line.dir.unit.Z;
+
+                point2 = line.End;
+                point2.X -= manifoldW / 2 * dir2.unit.X;
+                point2.Y -= manifoldW / 2 * dir2.unit.Y;
+                point2.Z -= manifoldW / 2 * dir2.unit.Z;
+            }
+            else if (IsCoincideWithGate(line.End))
+            {
+                point1 = line.End;
+                point1.X += manifoldW / 2 * dir2.unit.X + manifoldInsert * line.dir.unit.X;
+                point1.Y += manifoldW / 2 * dir2.unit.Y + manifoldInsert * line.dir.unit.Y;
+                point1.Z += manifoldW / 2 * dir2.unit.Z + manifoldInsert * line.dir.unit.Z;
+
+                point2 = line.Start;
+                point2.X -= manifoldW / 2 * dir2.unit.X;
+                point2.Y -= manifoldW / 2 * dir2.unit.Y;
+                point2.Z -= manifoldW / 2 * dir2.unit.Z;
+            }
+            else
+            {
+                point1 = line.End;
+                point1.X += manifoldW / 2 * dir2.unit.X;
+                point1.Y += manifoldW / 2 * dir2.unit.Y;
+                point1.Z += manifoldW / 2 * dir2.unit.Z;
+
+                point2 = line.Start;
+                point2.X -= manifoldW / 2 * dir2.unit.X;
+                point2.Y -= manifoldW / 2 * dir2.unit.Y;
+                point2.Z -= manifoldW / 2 * dir2.unit.Z;
+            }
+            
+            swDoc.SketchManager.CreateCornerRectangle(
+                point1.X, point1.Y, point1.Z,
                 point2.X, point2.Y, point2.Z);
+
+            #endregion
 
             Sketch thisSketch = swDoc.SketchManager.ActiveSketch;
             Feature thisFet = (Feature)thisSketch;
@@ -149,12 +188,29 @@ namespace HotRunner
             swDoc.ClearSelection2(true);
             boolstatus = swDoc.Extension.SelectByID2(thisFet.Name, "SKETCH", 0, 0, 0, false, 0, null, 0);
 
-            //合并，反向
+            //临时特征
             Feature myFeature = swDoc.SingleEndExtrusion(0.01,true,true);
             myFeature.Name = "runnerCube" + index.ToString();
             swDoc.ISelectionManager.EnableContourSelection = false;
 
             boolstatus = swDoc.EditRebuild3();//退出草图并重建图形
+        }
+
+        private bool IsCoincideWithGate(Point point)
+        {
+            double tolerance = 0.000005;
+
+            bool result = false;
+
+            for (int i = 0; i < gatePoints.Count; i++)
+            {
+                if (point.isCoincode(gatePoints[i], tolerance))
+                {
+                    return true;
+                }
+            }
+
+            return result;
         }
 
         private List<Line> GetManifoldEdge()
