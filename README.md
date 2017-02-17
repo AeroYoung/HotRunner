@@ -1,8 +1,10 @@
-# HotRunner
+# HotRunner 热流道
 
 Solidworks二次开发
 
 开发环境：SolidWorks2012 + VS2010
+
+>注：VS2012及其以后版本通常无法加载SWAddIn模板，但是在VS2012建立工程后VS2015还是能够打开并成功编译的。
 
 ## 心得
 
