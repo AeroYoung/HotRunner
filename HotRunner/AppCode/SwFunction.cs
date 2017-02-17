@@ -10,8 +10,10 @@ namespace HotRunner
 {
     public static class NXFunction
     {
+        #region 2D Sketch
+
         /// <summary>
-        /// 从数组中获得Line
+        /// 从Sketch.GetLines2数组中获得Line
         /// </summary>
         /// <param name="value">数组 Sketch.GetLines2</param>
         /// <param name="count">数量</param>
@@ -34,7 +36,7 @@ namespace HotRunner
         }
 
         /// <summary>
-        /// 得到草图线段中的直线
+        /// 得到Sketch中的线段
         /// </summary>
         /// <param name="swApp"></param>
         /// <param name="sketch">草图</param>
@@ -65,6 +67,11 @@ namespace HotRunner
             return segments;
         }
 
+        public static Line toLine(this SketchSegment segment)
+        {
+            return new Line(segment);
+        }
+
         /// <summary>
         /// 线段全部加入选择集
         /// </summary>
@@ -77,6 +84,10 @@ namespace HotRunner
                 boolstatus = segments[i].Select(true);
             }
         }
+
+        #endregion
+
+        #region 3D特征
 
         /// <summary>
         /// 薄壁拉伸
@@ -124,5 +135,7 @@ namespace HotRunner
                 );
 
         }
+
+        #endregion
     }
 }
