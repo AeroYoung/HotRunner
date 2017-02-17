@@ -143,31 +143,7 @@ namespace HotRunner
             //合并，反向
             Feature myFeature = swDoc.SingleEndExtrusion(0.046, false, true);//BODYFEATURE
             myFeature.Name = "Manifold";//DeleteSelection2
-        }
-
-        public void Commit2(Sketch sketch)
-        {
-            Feature fet = (Feature)sketch;
-            ModelDoc2 swDoc = (ModelDoc2)swApp.ActiveDoc;
-            SelectionMgr swSelMgr = (SelectionMgr)swDoc.SelectionManager;
-
-            bool boolstatus = swDoc.Extension.SelectByID2(fet.Name, "SKETCH", 0, 0, 0, false, 0, null, 0);
-
-            //swDoc.EditSketch();
-
-            List<SketchSegment> segments = NXFunction.GetSegmentLine(swApp, sketch);
-            //for (int i = 0; i < segments.Count; i++)
-            //{
-            //    segments[i].Select(true);                
-            //    segments[i].CreateCube(swApp);
-            //    //swDoc.ClearSelection2(true);
-            //}
-            //segments.SelectAll();            
-            
-            //boolstatus = swDoc.SketchManager.SketchOffset(0.022, true, true, false, false, true);
-            
-            boolstatus = swDoc.EditRebuild3();//退出草图并重建图形
-        }        
+        }   
     }
 }
 
