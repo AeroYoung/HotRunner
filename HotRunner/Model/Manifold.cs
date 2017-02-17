@@ -134,7 +134,7 @@ namespace HotRunner
 
             //合并，反向
             Feature myFeature = swDoc.SingleEndExtrusion(0.01, false, true);
-            myFeature.Name = "Manifold";
+            myFeature.Name = "Manifold";//DeleteSelection2
         }
 
         public void Commit2(Sketch sketch)
