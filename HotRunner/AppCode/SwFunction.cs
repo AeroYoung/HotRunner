@@ -67,17 +67,17 @@ namespace HotRunner
         }
 
         /// <summary>
-        /// 得到Sketch中的圆
+        /// 得到Sketch中的圆弧和圆
         /// </summary>
         /// <param name="swApp"></param>
         /// <param name="sketch">草图</param>
         /// <returns></returns>
-        public static List<SketchSegment> GetSegmentCircle(this Sketch sketch, SldWorks swApp)
+        public static List<SketchArc> GetSegmentArc(this Sketch sketch, SldWorks swApp)
         {
             ModelDoc2 swDoc = (ModelDoc2)swApp.ActiveDoc;
             SelectionMgr swSelMgr = (SelectionMgr)swDoc.SelectionManager;
 
-            List<SketchSegment> segments = new List<SketchSegment>();
+            List<SketchArc> segments = new List<SketchArc>();
             EnumSketchSegments enumSegments = sketch.IEnumSketchSegments();
             if (enumSegments != null)
             {
@@ -88,7 +88,7 @@ namespace HotRunner
                 while (segment != null)
                 {
                     if (segment.GetType() == (int)swSketchSegments_e.swSketchARC)
-                        segments.Add(segment);
+                        segments.Add((SketchArc)segment);
                     segment = null;
                     enumSegments.Next(1, out segment, ref next);
                 }

@@ -11,6 +11,8 @@ namespace HotRunner
 {
     public class Point
     {
+        #region Property
+
         private double x = 0;
 
         public double X { get { return x; } set { x = value; } }
@@ -22,6 +24,8 @@ namespace HotRunner
         private double z = 0;
 
         public double Z { get { return z; } set { z = value; } }
+
+        #endregion
 
         public Point(double[] value)
         {
@@ -124,7 +128,7 @@ namespace HotRunner
         public double Len { get { return len; } }
 
         #endregion
-
+        
         /// <summary>
         /// 从Sketch.GetLines2数组中获得数据
         /// </summary>

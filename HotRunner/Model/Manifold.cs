@@ -13,11 +13,11 @@ namespace HotRunner
     {
         #region 分流板参数
 
-        private double runnerDiameter = 0.014;//浇口直径
+        private double runnerDiameter = 0.009;//浇口直径
 
         public double RunnerDiameter { get { return runnerDiameter; } }
 
-        private int series = 14;//系列
+        private int series = 9;//系列
 
         public int Series { get { return series; } }
             
@@ -48,10 +48,17 @@ namespace HotRunner
 
             #region 获得流道直径和系列
 
-
+            List<SketchArc> arcs = basicSketch.GetSegmentArc(swApp);
+            for (int i = 0; i < arcs.Count; i++)
+            {
+                if (arcs[i].IsCircle() != 1) continue;
+                runnerDiameter = arcs[i].GetRadius() * 2;
+                series = (int)(runnerDiameter * 1000);
+                break;
+            }
 
             #endregion
-        }
+         }
 
         public void Commit()
         {
