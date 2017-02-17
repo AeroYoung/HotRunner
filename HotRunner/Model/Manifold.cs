@@ -42,6 +42,14 @@ namespace HotRunner
             List<Line> lines = GetManifoldEdge();
 
             NewSketch(lines);
+
+            ModelDoc2 swDoc = (ModelDoc2)swApp.ActiveDoc;
+            for (int i = segments.Count - 1; i > -1; i--)
+            {
+                bool boolstatus = swDoc.Extension.SelectByID2("runnerCube" + i.ToString(), 
+                    "BODYFEATURE", 0, 0, 0, false, 0, null, 0);
+                swDoc.Extension.DeleteSelection2((int)swDeleteSelectionOptions_e.swDelete_Absorbed);
+            }
         }
 
         private void CreateRunnerCube(SketchSegment segment,int index)
@@ -133,7 +141,7 @@ namespace HotRunner
             boolstatus = swDoc.Extension.SelectByID2(thisFet.Name, "SKETCH", 0, 0, 0, false, 0, null, 0);
 
             //合并，反向
-            Feature myFeature = swDoc.SingleEndExtrusion(0.01, false, true);
+            Feature myFeature = swDoc.SingleEndExtrusion(0.046, false, true);//BODYFEATURE
             myFeature.Name = "Manifold";//DeleteSelection2
         }
 
