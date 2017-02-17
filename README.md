@@ -11,3 +11,5 @@ Solidworks二次开发
 
 	总之，在各种ing事件中不要操作sw
 
+	1.1 发现在ButtonPress事件中操作SW也崩溃，原因应该就是上面说的。
+
