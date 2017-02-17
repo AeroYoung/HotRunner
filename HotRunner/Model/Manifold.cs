@@ -28,14 +28,20 @@ namespace HotRunner
 
         public void Commit(Sketch sketch)
         {
-            ModelDoc2 swDoc = (ModelDoc2)swApp.ActiveDoc;
-            
             segments = NXFunction.GetSegmentLine(swApp, sketch);
+
+            if (segments.Count == 0) return;
             
+            //创建临时Cube
             for (int i = 0; i < segments.Count; i++)
             {
                 CreateRunnerCube(segments[i],i);
             }
+
+            //得到边的几何数据
+            List<Line> lines = GetManifoldEdge();
+
+            NewSketch(lines);
         }
 
         private void CreateRunnerCube(SketchSegment segment,int index)
@@ -43,7 +49,7 @@ namespace HotRunner
             ModelDoc2 swDoc = (ModelDoc2)swApp.ActiveDoc;
             swDoc.ClearSelection2(true);
 
-            bool boolstatus = swDoc.Extension.SelectByID2("上视基准面", "PLANE", 0, 0, 0, false, 0, null, 0);
+            bool boolstatus = swDoc.Extension.SelectByID2("前视基准面", "PLANE", 0, 0, 0, false, 0, null, 0);
 
             swDoc.SketchManager.InsertSketch(true);
             
@@ -61,24 +67,68 @@ namespace HotRunner
 
             Sketch thisSketch = swDoc.SketchManager.ActiveSketch;
             Feature thisFet = (Feature)thisSketch;
-            thisFet.Name = "runner"+index.ToString();
+            thisFet.Name = "runnerSketch"+index.ToString();
 
             swDoc.ClearSelection2(true);
             boolstatus = swDoc.Extension.SelectByID2("thisFet.Name", "SKETCH", 0, 0, 0, false, 0, null, 0);
 
-            //boolstatus = swDoc.Extension.SelectByID2("Line5", "SKETCHSEGMENT", 0, 0, 0, false, 0, null, 0);
-            //boolstatus = swDoc.Extension.SelectByID2("Line6", "SKETCHSEGMENT", 0, 0, 0, true, 0, null, 0);
-            //boolstatus = swDoc.Extension.SelectByID2("Point1", "SKETCHPOINT", 0, 0, 0, true, 0, null, 0);
-            //boolstatus = swDoc.Extension.SelectByID2("Line2", "SKETCHSEGMENT", 0, 0, 0, true, 0, null, 0);
-            //boolstatus = swDoc.Extension.SelectByID2("Line1", "SKETCHSEGMENT", 0, 0, 0, true, 0, null, 0);
-            //boolstatus = swDoc.Extension.SelectByID2("Line4", "SKETCHSEGMENT", 0, 0, 0, true, 0, null, 0);
-            //boolstatus = swDoc.Extension.SelectByID2("Line3", "SKETCHSEGMENT", 0, 0, 0, true, 0, null, 0);
-
-            Feature myFeature = null;
-            myFeature = ((Feature)(swDoc.FeatureManager.FeatureExtrusion2(true, false, true, 0, 0, 0.123, 0.01, false, false, false, false, 0.017453292519943334, 0.017453292519943334, false, false, false, false, true, true, true, 0, 0, false)));
+            //合并，反向
+            Feature myFeature = swDoc.SingleEndExtrusion(0.01,true,true);
+            myFeature.Name = "runnerCube" + index.ToString();
             swDoc.ISelectionManager.EnableContourSelection = false;
 
             boolstatus = swDoc.EditRebuild3();//退出草图并重建图形
+        }
+
+        private List<Line> GetManifoldEdge()
+        {
+            List<Line> lines = new List<Line>();
+
+            ModelDoc2 swDoc = (ModelDoc2)swApp.ActiveDoc;
+            Feature feature = swDoc.GetFeatureInPrt("runnerCube0");
+            object[] faces = feature.GetFaces();
+            Vector target = new Vector(0, 1, 0);
+
+            for (int i = 0; i < faces.Count(); i++)
+            {
+                Face2 face = (Face2)faces[i];
+                Vector normal = new Vector(face.Normal);
+                if (!normal.isParallerTo(target, 0.000005))
+                    continue;
+                object[] edges = face.GetEdges();
+                
+                int count = face.GetEdgeCount();
+                for (int j = 0; j < count; j++)
+                {
+                    Edge edge = (Edge)edges[j];
+                    Point start = new Point(edge.GetCurveParams3().StartPoint);
+                    Point end = new Point(edge.GetCurveParams3().EndPoint);
+                    Line line = new Line(start, end);
+                    lines.Add(line);
+                }
+            }
+
+            return lines;
+        }
+
+        private void NewSketch(List<Line> lines)
+        {
+            ModelDoc2 swDoc = (ModelDoc2)swApp.ActiveDoc;
+            ISketchManager ikm = swDoc.SketchManager;
+            swDoc.ClearSelection2(true);
+
+            bool boolstatus = swDoc.Extension.SelectByID2("前视基准面", "PLANE", 0, 0, 0, false, 0, null, 0);
+            ikm.InsertSketch(true);
+
+            for (int i = 0; i < lines.Count; i++)
+            {
+                ikm.CreateLine(lines[i].Start.X, lines[i].Start.Y, lines[i].Start.Z,
+                        lines[i].End.X, lines[i].End.Y, lines[i].End.Z);
+            }            
+
+            Sketch thisSketch = ikm.ActiveSketch;
+            Feature thisFet = (Feature)thisSketch;
+            thisFet.Name = "ManifoldSketch";
         }
 
         public void Commit2(Sketch sketch)

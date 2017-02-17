@@ -136,6 +136,88 @@ namespace HotRunner
 
         }
 
+        public static Feature SingleEndExtrusion(this ModelDoc2 swDoc,double h,bool merge,bool flip)
+        {
+            Feature feature = swDoc.FeatureManager.FeatureExtrusion2(
+                true,//True for single ended, false for double ended
+                false,//True to flip side to cut
+                flip,//反向
+                (int)swEndConditions_e.swEndCondBlind,//Termination type for first end 
+                (int)swEndConditions_e.swEndCondBlind,
+                h,//Depth of extrusion for first end in meters
+                0,
+                false,//True allows draft angle in first direction, false does not allow drafting
+                false,
+                false,
+                false,
+                0.017453292519943334,//draft angle 1
+                0.017453292519943334,//draft angle 2
+                false,//OffsetReverse1 
+                      //If you chose to offset the first end condition from another face or plane,
+                      //then True specifies offset in direction away from the sketch, 
+                      //false specifies offset from the face or plane in direction toward the sketch
+                false,//OffsetReverse2
+                false,//TranslateSurface1 
+                      //When you choose swEndcondOffsetFromSurface as the termination type 
+                      //then True specifies that the end of the extrusion is a translation 
+                      //of the reference surface, false specifies to use a true offset
+                false,//TranslateSurface2
+                merge,//True to merge the results in a multibody part, false to not
+                true,
+                true,
+                (int)swStartConditions_e.swStartSketchPlane,//t0:Start condition 
+                0,//If t0 set to swStartOffset, then specify offset value
+                false
+                );
+
+            return feature;
+        }
+
+        #endregion
+
+        #region 获得对象
+
+        public static Feature GetFeatureInPrt(this ModelDoc2 swDoc,string name)
+        {
+            Feature feature = null;            
+            string featureName = "";
+
+            feature = swDoc.FirstFeature();
+            
+            while (feature != null)
+            {
+                featureName = feature.Name;
+                if (featureName == name) return feature;
+                else feature = feature.GetNextFeature();
+            }
+
+            return null;
+        }
+
+        #endregion
+
+        #region 几何计算
+
+        public static bool isParallerTo(this Vector source, Vector target, double tolerance)
+        {
+            if (Math.Abs(source.unit.X - target.unit.X) < tolerance &&
+               Math.Abs(source.unit.Y - target.unit.Y) < tolerance &&
+               Math.Abs(source.unit.Z - target.unit.Z) < tolerance)
+            {
+                return true;
+            }
+            else if (Math.Abs(source.unit.X + target.unit.X) < tolerance &&
+               Math.Abs(source.unit.Y + target.unit.Y) < tolerance &&
+               Math.Abs(source.unit.Z + target.unit.Z) < tolerance)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
         #endregion
     }
 }

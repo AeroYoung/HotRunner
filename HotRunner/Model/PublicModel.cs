@@ -40,6 +40,8 @@ namespace HotRunner
 
     public class Vector
     {
+        #region property
+
         private double x = 0;
 
         public double X { get { return x; } set { x = value; } }
@@ -56,6 +58,8 @@ namespace HotRunner
 
         public Vector unit { get { return new Vector(x / Len, y / Len, z / Len); } }
 
+        #endregion
+
         public Vector(double[] value)
         {
             x = value[0];
@@ -69,6 +73,7 @@ namespace HotRunner
             this.y = y;
             this.z = z;
         }
+                
     }
 
     public class Line
@@ -158,6 +163,15 @@ namespace HotRunner
             dir.Z *= len;
             end = new Point(start.X + dir.X, start.Y + dir.Y, start.Z + dir.Z);
             
+        }
+
+        public Line(Point start, Point end)
+        {
+            this.start = start;
+            this.end = end;
+
+            dir = new Vector(end.X - start.X, end.Y - start.Y, end.Z - start.Z);
+            len = Math.Sqrt(dir.X * dir.X + dir.Y * dir.Y + dir.Z * dir.Z);
         }
     }
 }
