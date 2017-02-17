@@ -29,25 +29,22 @@ namespace HotRunner
         public void Commit(Sketch sketch)
         {
             ModelDoc2 swDoc = (ModelDoc2)swApp.ActiveDoc;
-            swDoc.ClearSelection2(true);
-
+            
             segments = NXFunction.GetSegmentLine(swApp, sketch);
-
-            CreateRunnerCube(segments[1]);
+            
             for (int i = 0; i < segments.Count; i++)
             {
-                CreateRunnerCube(segments[i]);
+                CreateRunnerCube(segments[i],i);
             }
         }
 
-        private void CreateRunnerCube(SketchSegment segment)
+        private void CreateRunnerCube(SketchSegment segment,int index)
         {
             ModelDoc2 swDoc = (ModelDoc2)swApp.ActiveDoc;
             swDoc.ClearSelection2(true);
-            bool boolstatus = false;
-            
-            //TODO 遍历基准面或者创建基准面
-            boolstatus = swDoc.Extension.SelectByID2("上视基准面", "PLANE", 0, 0, 0, false, 0, null, 0);
+
+            bool boolstatus = swDoc.Extension.SelectByID2("上视基准面", "PLANE", 0, 0, 0, false, 0, null, 0);
+
             swDoc.SketchManager.InsertSketch(true);
             
             Line line = segment.toLine();
@@ -61,7 +58,26 @@ namespace HotRunner
             swDoc.SketchManager.CreateCenterRectangle(
                 centrePoint.X, centrePoint.Y, centrePoint.Z,
                 point2.X, point2.Y, point2.Z);
-            
+
+            Sketch thisSketch = swDoc.SketchManager.ActiveSketch;
+            Feature thisFet = (Feature)thisSketch;
+            thisFet.Name = "runner"+index.ToString();
+
+            swDoc.ClearSelection2(true);
+            boolstatus = swDoc.Extension.SelectByID2("thisFet.Name", "SKETCH", 0, 0, 0, false, 0, null, 0);
+
+            //boolstatus = swDoc.Extension.SelectByID2("Line5", "SKETCHSEGMENT", 0, 0, 0, false, 0, null, 0);
+            //boolstatus = swDoc.Extension.SelectByID2("Line6", "SKETCHSEGMENT", 0, 0, 0, true, 0, null, 0);
+            //boolstatus = swDoc.Extension.SelectByID2("Point1", "SKETCHPOINT", 0, 0, 0, true, 0, null, 0);
+            //boolstatus = swDoc.Extension.SelectByID2("Line2", "SKETCHSEGMENT", 0, 0, 0, true, 0, null, 0);
+            //boolstatus = swDoc.Extension.SelectByID2("Line1", "SKETCHSEGMENT", 0, 0, 0, true, 0, null, 0);
+            //boolstatus = swDoc.Extension.SelectByID2("Line4", "SKETCHSEGMENT", 0, 0, 0, true, 0, null, 0);
+            //boolstatus = swDoc.Extension.SelectByID2("Line3", "SKETCHSEGMENT", 0, 0, 0, true, 0, null, 0);
+
+            Feature myFeature = null;
+            myFeature = ((Feature)(swDoc.FeatureManager.FeatureExtrusion2(true, false, true, 0, 0, 0.123, 0.01, false, false, false, false, 0.017453292519943334, 0.017453292519943334, false, false, false, false, true, true, true, 0, 0, false)));
+            swDoc.ISelectionManager.EnableContourSelection = false;
+
             boolstatus = swDoc.EditRebuild3();//退出草图并重建图形
         }
 

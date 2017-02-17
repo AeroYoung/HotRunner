@@ -23,12 +23,12 @@ namespace HotRunner
 
         //Controls
         PropertyManagerPageSelectionbox selection1;
-        PropertyManagerPageButton button1;
+        //PropertyManagerPageButton button1;
 
         //Control IDs
         public const int group1ID = 0;
         public const int selection1ID = 8;
-        public const int button1ID = 13;
+        //public const int button1ID = 13;
         
         public BtnManifoldPage(SwAddin addin)
         {
@@ -94,12 +94,12 @@ namespace HotRunner
                 selection1.SingleEntityOnly = true;
             }
 
-            //button1
-            controlType = (int)swPropertyManagerPageControlType_e.swControlType_Button;
-            align = (int)swPropertyManagerPageControlLeftAlign_e.swControlAlign_LeftEdge;
-            options = (int)swAddControlOptions_e.swControlOptions_Enabled |
-                (int)swAddControlOptions_e.swControlOptions_Visible;
-            button1 = (PropertyManagerPageButton)group1.AddControl(button1ID, controlType, "ReDraw", align, options, "Redraw the model");
+            ////button1
+            //controlType = (int)swPropertyManagerPageControlType_e.swControlType_Button;
+            //align = (int)swPropertyManagerPageControlLeftAlign_e.swControlAlign_LeftEdge;
+            //options = (int)swAddControlOptions_e.swControlOptions_Enabled |
+            //    (int)swAddControlOptions_e.swControlOptions_Visible;
+            //button1 = (PropertyManagerPageButton)group1.AddControl(button1ID, controlType, "ReDraw", align, options, "Redraw the model");
 
         }
 
@@ -115,26 +115,35 @@ namespace HotRunner
 
         Sketch swSketch = null;
         int Count = 0;
+        int Reason = -1;
 
         #region Handler 接口
         
+        public void AfterClose()
+        {
+            if (Reason == (int)swPropertyManagerPageCloseReasons_e.swPropertyManagerPageClose_Okay)
+            {
+                try
+                {
+                    if (Count == 0 || swSketch == null) return;
+
+                    Manifold manifold = new Manifold(iSwApp);
+                    manifold.Commit(swSketch);
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(ex.ToString(), "错误提示");
+                }
+            }
+        }
+
         /// <summary>
         /// 关闭Page
         /// </summary>
         /// <param name="Reason">1:OK 2:Cancel</param>
         public void OnClose(int Reason)
         {
-            if (Reason == (int)swPropertyManagerPageCloseReasons_e.swPropertyManagerPageClose_Okay)
-            {
-                try
-                {
-                    
-                }
-                catch (Exception ex)
-                {
-                    MessageBox.Show(ex.ToString(),"错误提示");
-                }
-            }
+            this.Reason = Reason;
         }
 
         public bool OnSubmitSelection(int Id, object Selection, int SelType, ref string ItemText)
@@ -178,12 +187,7 @@ namespace HotRunner
         {
             ////throw new NotImplementedException();
         }
-
-        public void AfterClose()
-        {
-            //throw new NotImplementedException();
-        }
-
+        
         public int OnActiveXControlCreated(int Id, bool Status)
         {
             //throw new NotImplementedException();
@@ -192,10 +196,7 @@ namespace HotRunner
 
         public void OnButtonPress(int Id)
         {
-            if (Count == 0 || swSketch == null) return;
-
-            Manifold manifold = new Manifold(iSwApp);
-            manifold.Commit(swSketch);
+            
         }
 
         public void OnCheckboxCheck(int Id, bool Checked)
