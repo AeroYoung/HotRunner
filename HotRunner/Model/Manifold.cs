@@ -69,7 +69,14 @@ namespace HotRunner
             
             if (runnerSegments.Count == 0) return;
 
-            ManifoldBody();
+            //ManifoldBody();
+
+            IEquationMgr eqnMgr = swDoc.GetEquationMgr();
+            int count = eqnMgr.GetCount();
+            for(int i=0;i<count;i++)
+            {
+                MessageBox.Show(eqnMgr.Equation[i]);//"ManifoldW" = 50
+            }
         }
 
         #region 1.分流板主体
