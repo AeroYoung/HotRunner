@@ -287,12 +287,12 @@ namespace HotRunner
         {
             ModelDoc2 swDoc = (ModelDoc2)swApp.ActiveDoc;
             ISketchManager ikm = swDoc.SketchManager;
-            double tolerance = 0.00005;
+            double tolerance = 0.05;
 
             
             List<SketchLine> contours = new List<SketchLine>(contourSegmentLine.ToArray());
             List<SketchLine> runner = new List<SketchLine>(runnerSegments.ToArray());
-
+            
             for (int i = 0; i < contours.Count; i++)
             {
                 for (int j = 0; j < runner.Count; j++)
@@ -300,14 +300,16 @@ namespace HotRunner
                     if (!runner[j].isParallerTo(contours[i], tolerance))
                         continue;
                     
-                    if (runner[j].DistanceTo(contours[i]) != manifoldW / 2)
+                    double distance = contours[i].DistanceTo(runner[j]);
+                    double d = Math.Abs(distance - manifoldW / 2);
+                    if (d > 0.0001)
                         continue;
-
+                    
                     contours[i].DimensionWith(runner[j], manifoldW / 2, "", swApp);
-
-                    break;
+                    
                 }
-            }            
+            }
+                   
         }
 
         #endregion

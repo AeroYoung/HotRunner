@@ -344,10 +344,17 @@ namespace HotRunner
             Point p2 = l1.toLine().End;
             Point p3 = l2.toLine().Start;
 
-            double value1 = p1.DistanceTo(p3);
-            double value2 = p2.DistanceTo(p3);
+            Vector v1 = new Vector(p1, p2);
+            Vector v2 = new Vector(p1, p3);
 
-            return Math.Min(value1, value2);
+            Vector s = new Vector(
+                v1.Y*v2.Z-v1.Z*v2.Y,
+                v1.Z*v2.X-v1.X*v2.Z,
+                v1.X*v2.Y-v1.Y*v2.X);
+            double area = s.Len;
+
+            double h = area / l1.toLine().Len;
+            return h;
         }
 
         public static double DistanceTo(this Point p1, Point p2)
