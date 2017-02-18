@@ -43,6 +43,8 @@ namespace HotRunner
 
         private List<Line> contourLine = new List<Line>();//计算得到的轮廓
 
+        private List<SketchLine> contourSegmentLine = new List<SketchLine>();//轮廓的草图线段
+
         #endregion
 
         public Manifold(SldWorks swApp, Sketch basicSketch)
@@ -74,6 +76,8 @@ namespace HotRunner
 
             manifoldW = swApp.GetGlobalVariable("ManifoldW", manifoldW * 1000) / 1000;
 
+            swApp.SetGlobalVariable("ManifoldW2", manifoldW * 1000 / 2);//分流板宽度的一半，用于标注
+             
             manifoldH = swApp.GetGlobalVariable("ManifoldH", manifoldH * 1000) / 1000;
 
             #endregion
@@ -124,11 +128,19 @@ namespace HotRunner
 
             #endregion
 
-            #region 3.生成特征
+            #region 3.标注尺寸
 
             Sketch thisSketch = ikm.ActiveSketch;
             Feature thisFet = (Feature)thisSketch;
             thisFet.Name = "ManifoldSketch";
+
+            //1. 分流板宽度
+            contourSegmentLine = thisSketch.GetSegmentLine(swApp);
+            DimensionManifoldW();
+
+            #endregion
+
+            #region 3.生成特征
 
             boolstatus = swDoc.Extension.SelectByID2(thisFet.Name, "SKETCH", 0, 0, 0, false, 0, null, 0);
             
@@ -161,16 +173,16 @@ namespace HotRunner
             #region  画矩形
 
             Line line = segment.toLine();
-            Vector dir2 = new Vector(line.dir.Y, -line.dir.X, 0);
+            Vector dir2 = new Vector(line.Dir.Y, -line.Dir.X, 0);
             Point point1 = new Point(0, 0, 0);
             Point point2 = new Point(0, 0, 0);
 
             if (IsCoincideWithGate(line.Start))
             {
                 point1 = line.Start;
-                point1.X += manifoldW / 2 * dir2.unit.X - manifoldInsert * line.dir.unit.X;
-                point1.Y += manifoldW / 2 * dir2.unit.Y - manifoldInsert * line.dir.unit.Y;
-                point1.Z += manifoldW / 2 * dir2.unit.Z - manifoldInsert * line.dir.unit.Z;
+                point1.X += manifoldW / 2 * dir2.unit.X - manifoldInsert * line.Dir.unit.X;
+                point1.Y += manifoldW / 2 * dir2.unit.Y - manifoldInsert * line.Dir.unit.Y;
+                point1.Z += manifoldW / 2 * dir2.unit.Z - manifoldInsert * line.Dir.unit.Z;
 
                 point2 = line.End;
                 point2.X -= manifoldW / 2 * dir2.unit.X;
@@ -180,9 +192,9 @@ namespace HotRunner
             else if (IsCoincideWithGate(line.End))
             {
                 point1 = line.End;
-                point1.X += manifoldW / 2 * dir2.unit.X + manifoldInsert * line.dir.unit.X;
-                point1.Y += manifoldW / 2 * dir2.unit.Y + manifoldInsert * line.dir.unit.Y;
-                point1.Z += manifoldW / 2 * dir2.unit.Z + manifoldInsert * line.dir.unit.Z;
+                point1.X += manifoldW / 2 * dir2.unit.X + manifoldInsert * line.Dir.unit.X;
+                point1.Y += manifoldW / 2 * dir2.unit.Y + manifoldInsert * line.Dir.unit.Y;
+                point1.Z += manifoldW / 2 * dir2.unit.Z + manifoldInsert * line.Dir.unit.Z;
 
                 point2 = line.Start;
                 point2.X -= manifoldW / 2 * dir2.unit.X;
@@ -269,6 +281,52 @@ namespace HotRunner
             }
 
             return lines;
+        }
+        
+        private void DimensionManifoldW()
+        {
+            ModelDoc2 swDoc = (ModelDoc2)swApp.ActiveDoc;
+            ISketchManager ikm = swDoc.SketchManager;
+            double tolerance = 0.00005;
+
+            //复制并合并
+            List<SketchLine> contours = new List<SketchLine>(contourSegmentLine.ToArray());
+            for (int i = 0; i < runnerSegments.Count; i++)
+            {
+                contours.Add(runnerSegments[i]);
+            }
+            
+            while (contours.Count > 1)
+            {
+                int mark1 = -1;
+                int mark2 = -1;
+
+                for (int i = 1; i < contours.Count; i++)
+                {
+                    if (!contours[0].isParallerTo(contours[i], tolerance))
+                        continue;
+
+                    double d = contours[0].DistanceTo(contours[i]);
+                    if (contours[0].DistanceTo(contours[i]) != manifoldW / 2)
+                        continue;
+
+                    mark1 = 0;
+                    mark2 = i;
+
+                    break;
+                }
+
+                if (mark1 > -1 && mark2 > 0)
+                {
+                    contours[mark1].DimensionWith(contours[mark2], "", swApp);
+                    contours.RemoveAt(mark1);
+                    contours.RemoveAt(mark2);
+                }
+                else
+                {
+                    contours.RemoveAt(0);
+                }
+            }
         }
 
         #endregion

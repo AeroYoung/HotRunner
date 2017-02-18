@@ -123,12 +123,12 @@ namespace HotRunner
 
         public Point End { get { return end; } }
 
-        public Vector dir = new Vector(0, 0, 0);
+        private Vector dir = new Vector(0, 0, 0);
 
         /// <summary>
         /// 不是单位化的，相当于Vector
         /// </summary>
-        public Vector Dir { get { return dir; } }
+        public Vector Dir { get { return dir; } set { dir = value; } }
 
         private double len = 0;
 

@@ -117,6 +117,29 @@ namespace HotRunner
 
         #endregion
 
+        #region 尺寸标注
+
+        public static void DimensionWith(this SketchLine l1, SketchLine l2, string linkName, SldWorks swApp)
+        {
+            ModelDoc2 swDoc = (ModelDoc2)swApp.ActiveDoc;
+            swDoc.ClearSelection2(true);
+
+            ((SketchSegment)l1).Select(true);
+            ((SketchSegment)l1).Select(true);
+
+            Point textPoint = new Point((l1.toLine().Start.X + l2.toLine().Start.X) / 2,
+                (l1.toLine().Start.Y + l2.toLine().Start.Y) / 2,
+                (l1.toLine().Start.Z + l2.toLine().Start.Z) / 2);
+
+            DisplayDimension disDim = ((DisplayDimension)(swDoc.AddDimension2(textPoint.X,textPoint.Y, 0)));
+            swDoc.ClearSelection2(true);
+            //Dimension dim = disDim.GetDimension2(0);
+            //dim.SetSystemValue3();
+            //swDoc.ClearSelection2(true);
+        }
+
+        #endregion
+
         #region 3D特征
 
         /// <summary>
@@ -262,6 +285,29 @@ namespace HotRunner
             }
         }
 
+        public static bool isParallerTo(this SketchLine l1, SketchLine l2, double tolerance)
+        {
+            Vector source = l1.toLine().Dir;
+            Vector target = l2.toLine().Dir;
+
+            if (Math.Abs(source.unit.X - target.unit.X) < tolerance &&
+               Math.Abs(source.unit.Y - target.unit.Y) < tolerance &&
+               Math.Abs(source.unit.Z - target.unit.Z) < tolerance)
+            {
+                return true;
+            }
+            else if (Math.Abs(source.unit.X + target.unit.X) < tolerance &&
+               Math.Abs(source.unit.Y + target.unit.Y) < tolerance &&
+               Math.Abs(source.unit.Z + target.unit.Z) < tolerance)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
         /// <summary>
         /// 是否同向
         /// </summary>
@@ -289,6 +335,27 @@ namespace HotRunner
             }
         }
 
+        public static double DistanceTo(this SketchLine l1, SketchLine l2)
+        {
+            Point p1 = l1.toLine().Start;
+            Point p2 = l1.toLine().End;
+            Point p3 = l2.toLine().Start;
+
+            double value1 = p1.DistanceTo(p3);
+            double value2 = p2.DistanceTo(p3);
+
+            return Math.Min(value1, value2);
+        }
+
+        public static double DistanceTo(this Point p1, Point p2)
+        {
+            double x = Math.Pow(p1.X - p2.X, 2);
+            double y = Math.Pow(p1.Y - p2.Y, 2);
+            double z = Math.Pow(p1.Z - p2.Z, 2);
+
+            return Math.Sqrt(x + y + z);
+        }
+
         #endregion
 
         #region 方程式
@@ -306,8 +373,8 @@ namespace HotRunner
 
             IEquationMgr equationMgr = swDoc.GetEquationMgr();
             int count = equationMgr.GetCount();
-            
-            for (int i = 0; i < count; i++)
+
+            for (int i = count - 1; i > -1; i--)
             {
                 string equation = equationMgr.Equation[i];
 
@@ -353,7 +420,7 @@ namespace HotRunner
 
             string equation = "";
 
-            for (int i = 0; i < count; i++)
+            for (int i = count - 1; i > -1; i--)
             {
                 equation = equationMgr.Equation[i];
 
@@ -385,7 +452,7 @@ namespace HotRunner
 
             string equation = "";
 
-            for (int i = 0; i < count; i++)
+            for (int i = count - 1; i > -1 ; i--)
             {
                 equation = equationMgr.Equation[i];
 
@@ -408,3 +475,20 @@ namespace HotRunner
         #endregion
     }
 }
+//ModelDoc2 swDoc = null;
+//PartDoc swPart = null;
+//DrawingDoc swDrawing = null;
+//AssemblyDoc swAssembly = null;
+//bool boolstatus = false;
+//int longstatus = 0;
+//int longwarnings = 0;
+//swDoc = ((ModelDoc2)(swApp.ActiveDoc));
+//            boolstatus = swDoc.Extension.SelectByID2("Line1", "SKETCHSEGMENT", 0.031081890974648307, 0.018901974889229151, -0.04139906866908552, false, 0, null, 0);
+//            boolstatus = swDoc.Extension.SelectByID2("Line11", "SKETCHSEGMENT", 0.052055123860861474, -0.031743374434817256, -0.038390229101382317, true, 0, null, 0);
+//            DisplayDimension myDisplayDim = null;
+//myDisplayDim = ((DisplayDimension)(swDoc.AddDimension2(0.10924012066277555, 0.072741322651182827, 0)));
+//            swDoc.ClearSelection2(true);
+//            Dimension myDimension = null;
+//myDimension = ((Dimension)(swDoc.Parameter("D2@ManifoldSketch")));
+//            myDimension.SystemValue = 0.05222547215873;
+//            swDoc.ClearSelection2(true);
