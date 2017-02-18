@@ -23,7 +23,7 @@ namespace HotRunner
             
         private double manifoldInsert = 0.055;//浇口到分流板壁面
 
-        private double manifoldW = 0.044;//分流板宽度
+        private double maniW = 0.044;//分流板宽度
 
         private double manifoldH = 0.046;//分流板高度
 
@@ -60,7 +60,7 @@ namespace HotRunner
             for (int i = 0; i < gateArcs.Count; i++)
             {
                 runnerDiameter = gateArcs[i].GetRadius() * 2;
-                series = (int)(runnerDiameter * 1000);
+                series = (int)(Math.Round(runnerDiameter * 1000));
                 gatePoints.Add(new Point(gateArcs[i].GetCenterPoint2()));
             }
 
@@ -74,10 +74,8 @@ namespace HotRunner
 
             manifoldInsert = swApp.GetGlobalVariable("ManifoldInsert", manifoldInsert * 1000) / 1000;
 
-            manifoldW = swApp.GetGlobalVariable("ManifoldW", manifoldW * 1000) / 1000;
-
-            swApp.SetGlobalVariable("ManifoldW2", manifoldW * 1000 / 2);//分流板宽度的一半，用于标注
-             
+            maniW = swApp.GetGlobalVariable("ManiW", maniW * 1000) / 1000;
+            
             manifoldH = swApp.GetGlobalVariable("ManifoldH", manifoldH * 1000) / 1000;
 
             #endregion
@@ -136,7 +134,8 @@ namespace HotRunner
 
             //1. 分流板宽度
             contourSegmentLine = thisSketch.GetSegmentLine(swApp);
-            DimensionManifoldW();
+            DimensionManiW();
+            swApp.SetGlobalVariable2("ManiW", "\"ManiW2\" * 2");
 
             #endregion
 
@@ -147,7 +146,7 @@ namespace HotRunner
             Feature myFeature = swDoc.SingleEndExtrusion(manifoldH, false, true);
             myFeature.Name = "Manifold";
 
-            swApp.SetGlobalVariable("D1@Manifold", "ManifoldH");
+            swApp.SetGlobalVariable2("D1@Manifold", "ManifoldH");
 
             #endregion
 
@@ -180,38 +179,38 @@ namespace HotRunner
             if (IsCoincideWithGate(line.Start))
             {
                 point1 = line.Start;
-                point1.X += manifoldW / 2 * dir2.unit.X - manifoldInsert * line.Dir.unit.X;
-                point1.Y += manifoldW / 2 * dir2.unit.Y - manifoldInsert * line.Dir.unit.Y;
-                point1.Z += manifoldW / 2 * dir2.unit.Z - manifoldInsert * line.Dir.unit.Z;
+                point1.X += maniW / 2 * dir2.unit.X - manifoldInsert * line.Dir.unit.X;
+                point1.Y += maniW / 2 * dir2.unit.Y - manifoldInsert * line.Dir.unit.Y;
+                point1.Z += maniW / 2 * dir2.unit.Z - manifoldInsert * line.Dir.unit.Z;
 
                 point2 = line.End;
-                point2.X -= manifoldW / 2 * dir2.unit.X;
-                point2.Y -= manifoldW / 2 * dir2.unit.Y;
-                point2.Z -= manifoldW / 2 * dir2.unit.Z;
+                point2.X -= maniW / 2 * dir2.unit.X;
+                point2.Y -= maniW / 2 * dir2.unit.Y;
+                point2.Z -= maniW / 2 * dir2.unit.Z;
             }
             else if (IsCoincideWithGate(line.End))
             {
                 point1 = line.End;
-                point1.X += manifoldW / 2 * dir2.unit.X + manifoldInsert * line.Dir.unit.X;
-                point1.Y += manifoldW / 2 * dir2.unit.Y + manifoldInsert * line.Dir.unit.Y;
-                point1.Z += manifoldW / 2 * dir2.unit.Z + manifoldInsert * line.Dir.unit.Z;
+                point1.X += maniW / 2 * dir2.unit.X + manifoldInsert * line.Dir.unit.X;
+                point1.Y += maniW / 2 * dir2.unit.Y + manifoldInsert * line.Dir.unit.Y;
+                point1.Z += maniW / 2 * dir2.unit.Z + manifoldInsert * line.Dir.unit.Z;
 
                 point2 = line.Start;
-                point2.X -= manifoldW / 2 * dir2.unit.X;
-                point2.Y -= manifoldW / 2 * dir2.unit.Y;
-                point2.Z -= manifoldW / 2 * dir2.unit.Z;
+                point2.X -= maniW / 2 * dir2.unit.X;
+                point2.Y -= maniW / 2 * dir2.unit.Y;
+                point2.Z -= maniW / 2 * dir2.unit.Z;
             }
             else
             {
                 point1 = line.End;
-                point1.X += manifoldW / 2 * dir2.unit.X;
-                point1.Y += manifoldW / 2 * dir2.unit.Y;
-                point1.Z += manifoldW / 2 * dir2.unit.Z;
+                point1.X += maniW / 2 * dir2.unit.X;
+                point1.Y += maniW / 2 * dir2.unit.Y;
+                point1.Z += maniW / 2 * dir2.unit.Z;
 
                 point2 = line.Start;
-                point2.X -= manifoldW / 2 * dir2.unit.X;
-                point2.Y -= manifoldW / 2 * dir2.unit.Y;
-                point2.Z -= manifoldW / 2 * dir2.unit.Z;
+                point2.X -= maniW / 2 * dir2.unit.X;
+                point2.Y -= maniW / 2 * dir2.unit.Y;
+                point2.Z -= maniW / 2 * dir2.unit.Z;
             }
             
             swDoc.SketchManager.CreateCornerRectangle(
@@ -283,7 +282,7 @@ namespace HotRunner
             return lines;
         }
         
-        private void DimensionManifoldW()
+        private void DimensionManiW()
         {
             ModelDoc2 swDoc = (ModelDoc2)swApp.ActiveDoc;
             ISketchManager ikm = swDoc.SketchManager;
@@ -301,11 +300,11 @@ namespace HotRunner
                         continue;
                     
                     double distance = contours[i].DistanceTo(runner[j]);
-                    double d = Math.Abs(distance - manifoldW / 2);
+                    double d = Math.Abs(distance - maniW / 2);
                     if (d > 0.0001)
                         continue;
 
-                    contours[i].DimensionWith(runner[j], "", swApp);
+                    contours[i].DimensionWith(runner[j], "ManiW2", swApp);
                     
                 }
             }

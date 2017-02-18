@@ -133,11 +133,7 @@ namespace HotRunner
                 (l1.toLine().Start.Z + l2.toLine().Start.Z) / 2);
 
             swDoc.AddDimension2(textPoint.X, textPoint.Y, 0);
-
-            //DisplayDimension disDim = ((DisplayDimension)(swDoc.AddDimension2(textPoint.X,textPoint.Y, 0)));
-            //swDoc.ClearSelection2(true);
-            //Dimension dim = disDim.GetDimension2(0);
-            //dim.SetSystemValue3(value, (int)swInConfigurationOpts_e.swAllConfiguration,null);
+            
             swDoc.ClearSelection2(true);
         }
 
@@ -157,7 +153,10 @@ namespace HotRunner
                 (l1.toLine().Start.Y + l2.toLine().Start.Y) / 2,
                 (l1.toLine().Start.Z + l2.toLine().Start.Z) / 2);
 
-            swDoc.AddDimension2(textPoint.X, textPoint.Y, 0);
+            DisplayDimension disDim = swDoc.AddDimension2(textPoint.X, textPoint.Y, 0);
+
+            disDim.SetLinkedText("\"" + linkName + "\"");
+
             swDoc.ClearSelection2(true);
             swApp.SetUserPreferenceToggle((int)swUserPreferenceToggle_e.swInputDimValOnCreate,
                 true);
@@ -464,9 +463,7 @@ namespace HotRunner
                     equation.LastIndexOf("\"") - equation.IndexOf("\"") - 1).Trim();
 
                 if (name == variableName)
-                {
                     equationMgr.Delete(i);
-                }
             }
 
 
@@ -476,6 +473,12 @@ namespace HotRunner
             return;
         }
 
+        /// <summary>
+        /// 加引号
+        /// </summary>
+        /// <param name="swApp"></param>
+        /// <param name="variableName"></param>
+        /// <param name="value"></param>
         public static void SetGlobalVariable(this SldWorks swApp, string variableName, string value)
         {
             ModelDoc2 swDoc = (ModelDoc2)swApp.ActiveDoc;
@@ -505,23 +508,41 @@ namespace HotRunner
             equationMgr.Add2(-1, equation, false);
         }
 
+        /// <summary>
+        /// 不加引号
+        /// </summary>
+        /// <param name="swApp"></param>
+        /// <param name="variableName"></param>
+        /// <param name="value"></param>
+        public static void SetGlobalVariable2(this SldWorks swApp, string variableName, string value)
+        {
+            ModelDoc2 swDoc = (ModelDoc2)swApp.ActiveDoc;
+
+            IEquationMgr equationMgr = swDoc.GetEquationMgr();
+            int count = equationMgr.GetCount();
+
+            string equation = "";
+
+            for (int i = count - 1; i > -1; i--)
+            {
+                equation = equationMgr.Equation[i];
+
+                if (equation == null || !equation.Contains("\"") || !equation.Contains("="))
+                    continue;
+
+                string name = equation.Substring(equation.IndexOf("\"") + 1,
+                    equation.LastIndexOf("\"") - equation.IndexOf("\"") - 1).Trim();
+
+                if (name == variableName)
+                {
+                    equationMgr.Delete(i);
+                }
+            }
+
+            equation = "\"" + variableName + "\"" + " = " + value.ToString() + "";
+            equationMgr.Add2(-1, equation, false);
+        }
+        
         #endregion
     }
 }
-//ModelDoc2 swDoc = null;
-//PartDoc swPart = null;
-//DrawingDoc swDrawing = null;
-//AssemblyDoc swAssembly = null;
-//bool boolstatus = false;
-//int longstatus = 0;
-//int longwarnings = 0;
-//swDoc = ((ModelDoc2)(swApp.ActiveDoc));
-//            boolstatus = swDoc.Extension.SelectByID2("Line1", "SKETCHSEGMENT", 0.031081890974648307, 0.018901974889229151, -0.04139906866908552, false, 0, null, 0);
-//            boolstatus = swDoc.Extension.SelectByID2("Line11", "SKETCHSEGMENT", 0.052055123860861474, -0.031743374434817256, -0.038390229101382317, true, 0, null, 0);
-//            DisplayDimension myDisplayDim = null;
-//myDisplayDim = ((DisplayDimension)(swDoc.AddDimension2(0.10924012066277555, 0.072741322651182827, 0)));
-//            swDoc.ClearSelection2(true);
-//            Dimension myDimension = null;
-//myDimension = ((Dimension)(swDoc.Parameter("D2@ManifoldSketch")));
-//            myDimension.SystemValue = 0.05222547215873;
-//            swDoc.ClearSelection2(true);
