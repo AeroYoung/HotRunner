@@ -318,9 +318,9 @@ namespace HotRunner
 
                 if (mark1 > -1 && mark2 > 0)
                 {
-                    contours[mark1].DimensionWith(contours[mark2], "", swApp);
-                    contours.RemoveAt(mark1);
+                    contours[mark1].DimensionWith(contours[mark2], manifoldW / 2, "", swApp);
                     contours.RemoveAt(mark2);
+                    contours.RemoveAt(mark1);                    
                 }
                 else
                 {

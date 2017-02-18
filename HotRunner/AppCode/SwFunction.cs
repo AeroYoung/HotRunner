@@ -119,23 +119,26 @@ namespace HotRunner
 
         #region 尺寸标注
 
-        public static void DimensionWith(this SketchLine l1, SketchLine l2, string linkName, SldWorks swApp)
+        public static void DimensionWith(this SketchLine l1, SketchLine l2, double value,string linkName, SldWorks swApp)
         {
             ModelDoc2 swDoc = (ModelDoc2)swApp.ActiveDoc;
+            bool bl = false;
             swDoc.ClearSelection2(true);
-
-            ((SketchSegment)l1).Select(true);
-            ((SketchSegment)l1).Select(true);
+            double d = l1.DistanceTo(l2);
+            bl = ((SketchSegment)l1).Select(true);
+            bl = ((SketchSegment)l1).Select(true);
 
             Point textPoint = new Point((l1.toLine().Start.X + l2.toLine().Start.X) / 2,
                 (l1.toLine().Start.Y + l2.toLine().Start.Y) / 2,
                 (l1.toLine().Start.Z + l2.toLine().Start.Z) / 2);
 
-            DisplayDimension disDim = ((DisplayDimension)(swDoc.AddDimension2(textPoint.X,textPoint.Y, 0)));
-            swDoc.ClearSelection2(true);
-            //Dimension dim = disDim.GetDimension2(0);
-            //dim.SetSystemValue3();
+            swDoc.AddDimension2(textPoint.X, textPoint.Y, 0);
+
+            //DisplayDimension disDim = ((DisplayDimension)(swDoc.AddDimension2(textPoint.X,textPoint.Y, 0)));
             //swDoc.ClearSelection2(true);
+            //Dimension dim = disDim.GetDimension2(0);
+            //dim.SetSystemValue3(value, (int)swInConfigurationOpts_e.swAllConfiguration,null);
+            swDoc.ClearSelection2(true);
         }
 
         #endregion
