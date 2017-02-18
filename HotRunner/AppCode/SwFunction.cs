@@ -145,19 +145,22 @@ namespace HotRunner
         {
             
             ModelDoc2 swDoc = (ModelDoc2)swApp.ActiveDoc;
-            bool bl = swDoc.SetUserPreferenceToggle((int)swUserPreferenceToggle_e.swInputDimValOnCreate,
+            bool bl = false;
+                swApp.SetUserPreferenceToggle((int)swUserPreferenceToggle_e.swInputDimValOnCreate,
                 false);
             swDoc.ClearSelection2(true);
 
             bl = ((SketchSegment)l1).Select(false);
             bl = ((SketchSegment)l2).Select(true);
-
+            
             Point textPoint = new Point((l1.toLine().Start.X + l2.toLine().Start.X) / 2,
                 (l1.toLine().Start.Y + l2.toLine().Start.Y) / 2,
                 (l1.toLine().Start.Z + l2.toLine().Start.Z) / 2);
 
             swDoc.AddDimension2(textPoint.X, textPoint.Y, 0);
             swDoc.ClearSelection2(true);
+            swApp.SetUserPreferenceToggle((int)swUserPreferenceToggle_e.swInputDimValOnCreate,
+                true);
         }
 
 
