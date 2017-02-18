@@ -124,9 +124,9 @@ namespace HotRunner
             ModelDoc2 swDoc = (ModelDoc2)swApp.ActiveDoc;
             bool bl = false;
             swDoc.ClearSelection2(true);
-            double d = l1.DistanceTo(l2);
-            bl = ((SketchSegment)l1).Select(true);
-            bl = ((SketchSegment)l1).Select(true);
+            
+            bl = ((SketchSegment)l1).Select(false);
+            bl = ((SketchSegment)l2).Select(true);
 
             Point textPoint = new Point((l1.toLine().Start.X + l2.toLine().Start.X) / 2,
                 (l1.toLine().Start.Y + l2.toLine().Start.Y) / 2,

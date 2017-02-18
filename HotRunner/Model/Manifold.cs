@@ -289,44 +289,25 @@ namespace HotRunner
             ISketchManager ikm = swDoc.SketchManager;
             double tolerance = 0.00005;
 
-            //复制并合并
-            List<SketchLine> contours = new List<SketchLine>(contourSegmentLine.ToArray());
-            for (int i = 0; i < runnerSegments.Count; i++)
-            {
-                contours.Add(runnerSegments[i]);
-            }
             
-            while (contours.Count > 1)
-            {
-                int mark1 = -1;
-                int mark2 = -1;
+            List<SketchLine> contours = new List<SketchLine>(contourSegmentLine.ToArray());
+            List<SketchLine> runner = new List<SketchLine>(runnerSegments.ToArray());
 
-                for (int i = 1; i < contours.Count; i++)
+            for (int i = 0; i < contours.Count; i++)
+            {
+                for (int j = 0; j < runner.Count; j++)
                 {
                     if (!contours[0].isParallerTo(contours[i], tolerance))
                         continue;
-
-                    double d = contours[0].DistanceTo(contours[i]);
+                    
                     if (contours[0].DistanceTo(contours[i]) != manifoldW / 2)
                         continue;
 
-                    mark1 = 0;
-                    mark2 = i;
+                    contours[i].DimensionWith(runner[j], manifoldW / 2, "", swApp);
 
                     break;
                 }
-
-                if (mark1 > -1 && mark2 > 0)
-                {
-                    contours[mark1].DimensionWith(contours[mark2], manifoldW / 2, "", swApp);
-                    contours.RemoveAt(mark2);
-                    contours.RemoveAt(mark1);                    
-                }
-                else
-                {
-                    contours.RemoveAt(0);
-                }
-            }
+            }            
         }
 
         #endregion
