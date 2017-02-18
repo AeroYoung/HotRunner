@@ -297,10 +297,10 @@ namespace HotRunner
             {
                 for (int j = 0; j < runner.Count; j++)
                 {
-                    if (!contours[0].isParallerTo(contours[i], tolerance))
+                    if (!runner[j].isParallerTo(contours[i], tolerance))
                         continue;
                     
-                    if (contours[0].DistanceTo(contours[i]) != manifoldW / 2)
+                    if (runner[j].DistanceTo(contours[i]) != manifoldW / 2)
                         continue;
 
                     contours[i].DimensionWith(runner[j], manifoldW / 2, "", swApp);
