@@ -296,10 +296,11 @@ namespace HotRunner
         /// <summary>
         /// 获取全局变量的值，若无则创建
         /// </summary>
+        /// <param name="swApp"></param>
         /// <param name="name"></param>
         /// <param name="defaultValue"></param>
         /// <returns></returns>
-        public static double GlobalVariableValue(this SldWorks swApp,string variableName,double defaultValue)
+        public static double GetGlobalVariable(this SldWorks swApp,string variableName,double defaultValue)
         {
             ModelDoc2 swDoc = (ModelDoc2)swApp.ActiveDoc;
 
@@ -309,12 +310,16 @@ namespace HotRunner
             for (int i = 0; i < count; i++)
             {
                 string equation = equationMgr.Equation[i];
+
+                if (equation == null || !equation.Contains("\"") || !equation.Contains("="))
+                    continue;
+
                 string name = equation.Substring(equation.IndexOf("\"") + 1,
                     equation.LastIndexOf("\"") - equation.IndexOf("\"") - 1).Trim();
 
                 if (name == variableName)
                 {
-                    string value = equation.Substring(equation.IndexOf("=" + 1));
+                    string value = equation.Substring(equation.IndexOf("=") + 1);
                     double result = defaultValue;
 
                     if (double.TryParse(value, out result))
@@ -331,6 +336,73 @@ namespace HotRunner
             equationMgr.Add2(-1, newEquation, false);
 
             return defaultValue;
+        }
+
+        /// <summary>
+        /// 更新或者创建全局变量值
+        /// </summary>
+        /// <param name="swApp"></param>
+        /// <param name="variableName"></param>
+        /// <param name="value"></param>
+        public static void SetGlobalVariable(this SldWorks swApp, string variableName, double value)
+        {
+            ModelDoc2 swDoc = (ModelDoc2)swApp.ActiveDoc;
+
+            IEquationMgr equationMgr = swDoc.GetEquationMgr();
+            int count = equationMgr.GetCount();
+
+            string equation = "";
+
+            for (int i = 0; i < count; i++)
+            {
+                equation = equationMgr.Equation[i];
+
+                if (equation == null || !equation.Contains("\"") || !equation.Contains("="))
+                    continue;
+
+                string name = equation.Substring(equation.IndexOf("\"") + 1,
+                    equation.LastIndexOf("\"") - equation.IndexOf("\"") - 1).Trim();
+
+                if (name == variableName)
+                {
+                    equationMgr.Delete(i);
+                }
+            }
+
+
+            equation = "\"" + variableName + "\"" + " = " + value.ToString();
+            equationMgr.Add2(-1, equation, false);
+
+            return;
+        }
+
+        public static void SetGlobalVariable(this SldWorks swApp, string variableName, string value)
+        {
+            ModelDoc2 swDoc = (ModelDoc2)swApp.ActiveDoc;
+
+            IEquationMgr equationMgr = swDoc.GetEquationMgr();
+            int count = equationMgr.GetCount();
+
+            string equation = "";
+
+            for (int i = 0; i < count; i++)
+            {
+                equation = equationMgr.Equation[i];
+
+                if (equation == null || !equation.Contains("\"") || !equation.Contains("="))
+                    continue;
+
+                string name = equation.Substring(equation.IndexOf("\"") + 1,
+                    equation.LastIndexOf("\"") - equation.IndexOf("\"") - 1).Trim();
+
+                if (name == variableName)
+                {
+                    equationMgr.Delete(i);
+                }
+            }
+
+            equation = "\"" + variableName + "\"" + " = \"" + value.ToString() + "\"";
+            equationMgr.Add2(-1, equation, false);
         }
 
         #endregion

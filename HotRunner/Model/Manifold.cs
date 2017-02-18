@@ -57,22 +57,22 @@ namespace HotRunner
             for (int i = 0; i < gateArcs.Count; i++)
             {
                 runnerDiameter = gateArcs[i].GetRadius() * 2;
-                
+                series = (int)(runnerDiameter * 1000);
                 gatePoints.Add(new Point(gateArcs[i].GetCenterPoint2()));
             }
             #endregion
 
             #region 2.设置或获取SW Global Variable。单位是mm，主意转换！
 
-            runnerDiameter = swApp.GlobalVariableValue("RunnerDiameter", runnerDiameter / 1000) / 1000;
+            swApp.SetGlobalVariable("RunnerDiameter", runnerDiameter * 1000);
 
-            series = (int)(runnerDiameter * 1000);
+            swApp.SetGlobalVariable("Series", series);
 
-            manifoldInsert = swApp.GlobalVariableValue("ManifoldInsert", manifoldInsert / 1000) / 1000;
+            manifoldInsert = swApp.GetGlobalVariable("ManifoldInsert", manifoldInsert * 1000) / 1000;
 
-            manifoldW = swApp.GlobalVariableValue("ManifoldW", manifoldW / 1000) / 1000;
+            manifoldW = swApp.GetGlobalVariable("ManifoldW", manifoldW * 1000) / 1000;
 
-            manifoldH = swApp.GlobalVariableValue("ManifoldH", manifoldH / 1000) / 1000;
+            manifoldH = swApp.GetGlobalVariable("ManifoldH", manifoldH * 1000) / 1000;
 
             #endregion
         }
@@ -125,6 +125,8 @@ namespace HotRunner
             
             Feature myFeature = swDoc.SingleEndExtrusion(manifoldH, false, true);
             myFeature.Name = "Manifold";
+
+            swApp.SetGlobalVariable("D1@Manifold", "ManifoldH");
 
             #endregion
 
