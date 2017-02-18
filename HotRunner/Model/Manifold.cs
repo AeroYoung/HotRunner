@@ -54,12 +54,14 @@ namespace HotRunner
             gateArcs = basicSketch.GetSegmentArc(swApp);
 
             #region 1.从Sketch中获得流道直径
+
             for (int i = 0; i < gateArcs.Count; i++)
             {
                 runnerDiameter = gateArcs[i].GetRadius() * 2;
                 series = (int)(runnerDiameter * 1000);
                 gatePoints.Add(new Point(gateArcs[i].GetCenterPoint2()));
             }
+
             #endregion
 
             #region 2.设置或获取SW Global Variable。单位是mm，主意转换！
@@ -90,6 +92,9 @@ namespace HotRunner
 
         #region 1.分流板主体
 
+        /// <summary>
+        /// 创建分流板主体，并关联ManifoldH全局变量
+        /// </summary>
         private void ManifoldBody()
         {
             ModelDoc2 swDoc = (ModelDoc2)swApp.ActiveDoc;
@@ -117,6 +122,10 @@ namespace HotRunner
                         contourLine[i].End.X, contourLine[i].End.Y, contourLine[i].End.Z);
             }
 
+            #endregion
+
+            #region 3.生成特征
+
             Sketch thisSketch = ikm.ActiveSketch;
             Feature thisFet = (Feature)thisSketch;
             thisFet.Name = "ManifoldSketch";
@@ -130,7 +139,7 @@ namespace HotRunner
 
             #endregion
 
-            #region 3.删除临时特征
+            #region 4.删除临时特征
             for (int i = runnerSegments.Count - 1; i > -1; i--)
             {
                 boolstatus = swDoc.Extension.SelectByID2("runnerCube" + i.ToString(),
