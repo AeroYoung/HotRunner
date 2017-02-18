@@ -304,8 +304,8 @@ namespace HotRunner
                     double d = Math.Abs(distance - manifoldW / 2);
                     if (d > 0.0001)
                         continue;
-                    
-                    contours[i].DimensionWith(runner[j], manifoldW / 2, "", swApp);
+
+                    contours[i].DimensionWith(runner[j], "", swApp);
                     
                 }
             }
