@@ -135,7 +135,7 @@ namespace HotRunner
             //1. 分流板宽度
             contourSegmentLine = thisSketch.GetSegmentLine(swApp);
             DimensionManiW();
-            swApp.SetGlobalVariable2("ManiW", "\"ManiW2\" * 2");
+            swApp.SetGlobalVariable2("ManiW", "\"ManifoldH\" * 2");
 
             #endregion
 
@@ -146,7 +146,7 @@ namespace HotRunner
             Feature myFeature = swDoc.SingleEndExtrusion(manifoldH, false, true);
             myFeature.Name = "Manifold";
 
-            swApp.SetGlobalVariable2("D1@Manifold", "ManifoldH");
+            swApp.SetGlobalVariable("D1@Manifold", "ManifoldH");
 
             #endregion
 

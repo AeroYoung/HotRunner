@@ -155,7 +155,7 @@ namespace HotRunner
 
             DisplayDimension disDim = swDoc.AddDimension2(textPoint.X, textPoint.Y, 0);
 
-            disDim.SetLinkedText("\"" + linkName + "\"");
+            disDim.SetLinkedText("" + linkName + "");
 
             swDoc.ClearSelection2(true);
             swApp.SetUserPreferenceToggle((int)swUserPreferenceToggle_e.swInputDimValOnCreate,
