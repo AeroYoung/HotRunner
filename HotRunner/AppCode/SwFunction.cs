@@ -292,7 +292,46 @@ namespace HotRunner
         #endregion
 
         #region 方程式
-        
+
+        /// <summary>
+        /// 获取全局变量的值，若无则创建
+        /// </summary>
+        /// <param name="name"></param>
+        /// <param name="defaultValue"></param>
+        /// <returns></returns>
+        public static double GlobalVariableValue(this SldWorks swApp,string variableName,double defaultValue)
+        {
+            ModelDoc2 swDoc = (ModelDoc2)swApp.ActiveDoc;
+
+            IEquationMgr equationMgr = swDoc.GetEquationMgr();
+            int count = equationMgr.GetCount();
+            
+            for (int i = 0; i < count; i++)
+            {
+                string equation = equationMgr.Equation[i];
+                string name = equation.Substring(equation.IndexOf("\"") + 1,
+                    equation.LastIndexOf("\"") - equation.IndexOf("\"") - 1).Trim();
+
+                if (name == variableName)
+                {
+                    string value = equation.Substring(equation.IndexOf("=" + 1));
+                    double result = defaultValue;
+
+                    if (double.TryParse(value, out result))
+                        return result;
+                    else
+                        equationMgr.Delete(i);
+
+                    break;
+                }                
+            }
+
+            //若无，或者转换失败则添加全局变量
+            string newEquation = "\"" + variableName + "\"" + " = " + defaultValue.ToString();
+            equationMgr.Add2(-1, newEquation, false);
+
+            return defaultValue;
+        }
 
         #endregion
     }

@@ -11,7 +11,7 @@ namespace HotRunner
 {
     public class Manifold
     {
-        #region 分流板参数
+        #region 分流板参数 单位m
 
         private double runnerDiameter = 0.009;//浇口直径
 
@@ -53,15 +53,29 @@ namespace HotRunner
             runnerSegments = basicSketch.GetSegmentLine(swApp);
             gateArcs = basicSketch.GetSegmentArc(swApp);
 
-            //获得流道直径和系列
+            #region 1.从Sketch中获得流道直径
             for (int i = 0; i < gateArcs.Count; i++)
             {
                 runnerDiameter = gateArcs[i].GetRadius() * 2;
-                series = (int)(runnerDiameter * 1000);
-
+                
                 gatePoints.Add(new Point(gateArcs[i].GetCenterPoint2()));
-            }            
-         }
+            }
+            #endregion
+
+            #region 2.设置或获取SW Global Variable。单位是mm，主意转换！
+
+            runnerDiameter = swApp.GlobalVariableValue("RunnerDiameter", runnerDiameter / 1000) / 1000;
+
+            series = (int)(runnerDiameter * 1000);
+
+            manifoldInsert = swApp.GlobalVariableValue("ManifoldInsert", manifoldInsert / 1000) / 1000;
+
+            manifoldW = swApp.GlobalVariableValue("ManifoldW", manifoldW / 1000) / 1000;
+
+            manifoldH = swApp.GlobalVariableValue("ManifoldH", manifoldH / 1000) / 1000;
+
+            #endregion
+        }
 
         public void Commit()
         {
@@ -69,14 +83,9 @@ namespace HotRunner
             
             if (runnerSegments.Count == 0) return;
 
-            //ManifoldBody();
+            ManifoldBody();
 
-            IEquationMgr eqnMgr = swDoc.GetEquationMgr();
-            int count = eqnMgr.GetCount();
-            for(int i=0;i<count;i++)
-            {
-                MessageBox.Show(eqnMgr.Equation[i]);//"ManifoldW" = 50
-            }
+            
         }
 
         #region 1.分流板主体
