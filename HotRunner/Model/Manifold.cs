@@ -21,11 +21,11 @@ namespace HotRunner
 
         public int Series { get { return series; } }
             
-        private double manifoldInsert = 0.055;//浇口到分流板壁面
+        private double maniInsert = 0.055;//浇口到分流板壁面
 
         private double maniW = 0.044;//分流板宽度
 
-        private double manifoldH = 0.046;//分流板高度
+        private double maniH = 0.046;//分流板高度
 
         #endregion
 
@@ -72,11 +72,11 @@ namespace HotRunner
 
             swApp.SetGlobalVariable("Series", series);
 
-            manifoldInsert = swApp.GetGlobalVariable("ManifoldInsert", manifoldInsert * 1000) / 1000;
+            maniInsert = swApp.GetGlobalVariableValue("ManiInsert", maniInsert * 1000) / 1000;
 
-            maniW = swApp.GetGlobalVariable("ManiW", maniW * 1000) / 1000;
+            maniW = swApp.GetGlobalVariableValue("ManiW", maniW * 1000) / 1000;
             
-            manifoldH = swApp.GetGlobalVariable("ManifoldH", manifoldH * 1000) / 1000;
+            maniH = swApp.GetGlobalVariableValue("ManiH", maniH * 1000) / 1000;
 
             #endregion
         }
@@ -95,7 +95,7 @@ namespace HotRunner
         #region 1.分流板主体
 
         /// <summary>
-        /// 创建分流板主体，并关联ManifoldH全局变量
+        /// 创建分流板主体，并关联ManiH全局变量
         /// </summary>
         private void ManifoldBody()
         {
@@ -135,18 +135,17 @@ namespace HotRunner
             //1. 分流板宽度
             contourSegmentLine = thisSketch.GetSegmentLine(swApp);
             DimensionManiW();
-            swApp.SetGlobalVariable2("ManiW", "\"ManifoldH\" * 2");
-
+            swApp.SetFunction("ManiW", "\"ManiW2\" * 2");
             #endregion
 
             #region 3.生成特征
 
             boolstatus = swDoc.Extension.SelectByID2(thisFet.Name, "SKETCH", 0, 0, 0, false, 0, null, 0);
             
-            Feature myFeature = swDoc.SingleEndExtrusion(manifoldH, false, true);
+            Feature myFeature = swDoc.SingleEndExtrusion(maniH, false, true);
             myFeature.Name = "Manifold";
 
-            swApp.SetGlobalVariable("D1@Manifold", "ManifoldH");
+            swApp.SetGlobalVariable("D1@Manifold", "ManiH");
 
             #endregion
 
@@ -179,9 +178,9 @@ namespace HotRunner
             if (IsCoincideWithGate(line.Start))
             {
                 point1 = line.Start;
-                point1.X += maniW / 2 * dir2.unit.X - manifoldInsert * line.Dir.unit.X;
-                point1.Y += maniW / 2 * dir2.unit.Y - manifoldInsert * line.Dir.unit.Y;
-                point1.Z += maniW / 2 * dir2.unit.Z - manifoldInsert * line.Dir.unit.Z;
+                point1.X += maniW / 2 * dir2.unit.X - maniInsert * line.Dir.unit.X;
+                point1.Y += maniW / 2 * dir2.unit.Y - maniInsert * line.Dir.unit.Y;
+                point1.Z += maniW / 2 * dir2.unit.Z - maniInsert * line.Dir.unit.Z;
 
                 point2 = line.End;
                 point2.X -= maniW / 2 * dir2.unit.X;
@@ -191,9 +190,9 @@ namespace HotRunner
             else if (IsCoincideWithGate(line.End))
             {
                 point1 = line.End;
-                point1.X += maniW / 2 * dir2.unit.X + manifoldInsert * line.Dir.unit.X;
-                point1.Y += maniW / 2 * dir2.unit.Y + manifoldInsert * line.Dir.unit.Y;
-                point1.Z += maniW / 2 * dir2.unit.Z + manifoldInsert * line.Dir.unit.Z;
+                point1.X += maniW / 2 * dir2.unit.X + maniInsert * line.Dir.unit.X;
+                point1.Y += maniW / 2 * dir2.unit.Y + maniInsert * line.Dir.unit.Y;
+                point1.Z += maniW / 2 * dir2.unit.Z + maniInsert * line.Dir.unit.Z;
 
                 point2 = line.Start;
                 point2.X -= maniW / 2 * dir2.unit.X;

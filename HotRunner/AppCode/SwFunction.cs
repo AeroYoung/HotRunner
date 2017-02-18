@@ -393,13 +393,13 @@ namespace HotRunner
         #region 方程式
 
         /// <summary>
-        /// 获取全局变量的值，若无则创建
+        /// 获取全局变量的方程式内容，若无则创建
         /// </summary>
         /// <param name="swApp"></param>
         /// <param name="name"></param>
         /// <param name="defaultValue"></param>
         /// <returns></returns>
-        public static double GetGlobalVariable(this SldWorks swApp,string variableName,double defaultValue)
+        public static string GetFunction(this SldWorks swApp,string variableName,string defaultFunction)
         {
             ModelDoc2 swDoc = (ModelDoc2)swApp.ActiveDoc;
 
@@ -413,21 +413,58 @@ namespace HotRunner
                 if (equation == null || !equation.Contains("\"") || !equation.Contains("="))
                     continue;
 
-                string name = equation.Substring(equation.IndexOf("\"") + 1,
-                    equation.LastIndexOf("\"") - equation.IndexOf("\"") - 1).Trim();
+                int s = equation.IndexOf("\"") + 1;
+                int e = equation.IndexOf("=");
+                string name = equation.Substring(s, e - s).Trim();
+                e = name.LastIndexOf("\"");
+                name = name.Substring(0, e).Trim();
 
                 if (name == variableName)
                 {
-                    string value = equation.Substring(equation.IndexOf("=") + 1);
-                    double result = defaultValue;
-
-                    if (double.TryParse(value, out result))
-                        return result;
-                    else
-                        equationMgr.Delete(i);
-
-                    break;
+                    string function = equation.Substring(equation.IndexOf("=") + 1);
+                    
+                    return function;
                 }                
+            }
+
+            //若无，或者转换失败则添加全局变量
+            string newEquation = "\"" + variableName + "\"" + " = " + defaultFunction;
+            equationMgr.Add2(-1, newEquation, false);
+
+            return defaultFunction;
+        }
+
+        /// <summary>
+        /// 获取计算后的值，若无则创建
+        /// </summary>
+        /// <param name="swApp"></param>
+        /// <param name="variableName"></param>
+        /// <param name="defaultValue"></param>
+        /// <returns></returns>
+        public static double GetGlobalVariableValue(this SldWorks swApp, string variableName, double defaultValue)
+        {
+            ModelDoc2 swDoc = (ModelDoc2)swApp.ActiveDoc;
+
+            IEquationMgr equationMgr = swDoc.GetEquationMgr();
+            //equationMgr.EvaluateAll();
+            int count = equationMgr.GetCount();
+
+            for (int i = count - 1; i > -1; i--)
+            {
+                string equation = equationMgr.Equation[i];
+
+                if (equation == null || !equation.Contains("\"") || !equation.Contains("="))
+                    continue;
+
+                int s = equation.IndexOf("\"") + 1;
+                int e = equation.IndexOf("=");
+                string name = equation.Substring(s, e - s).Trim();
+                e = name.LastIndexOf("\"");
+                name = name.Substring(0, e).Trim();
+
+                if (name == variableName)
+                    return equationMgr.Value[i];
+                
             }
 
             //若无，或者转换失败则添加全局变量
@@ -436,7 +473,7 @@ namespace HotRunner
 
             return defaultValue;
         }
-
+        
         /// <summary>
         /// 更新或者创建全局变量值
         /// </summary>
@@ -459,8 +496,11 @@ namespace HotRunner
                 if (equation == null || !equation.Contains("\"") || !equation.Contains("="))
                     continue;
 
-                string name = equation.Substring(equation.IndexOf("\"") + 1,
-                    equation.LastIndexOf("\"") - equation.IndexOf("\"") - 1).Trim();
+                int s = equation.IndexOf("\"") + 1;
+                int e = equation.IndexOf("=");
+                string name = equation.Substring(s, e - s).Trim();
+                e = name.LastIndexOf("\"");
+                name = name.Substring(0, e).Trim();
 
                 if (name == variableName)
                     equationMgr.Delete(i);
@@ -474,7 +514,7 @@ namespace HotRunner
         }
 
         /// <summary>
-        /// 加引号
+        /// 函数自动在=后面加上引号
         /// </summary>
         /// <param name="swApp"></param>
         /// <param name="variableName"></param>
@@ -495,8 +535,11 @@ namespace HotRunner
                 if (equation == null || !equation.Contains("\"") || !equation.Contains("="))
                     continue;
 
-                string name = equation.Substring(equation.IndexOf("\"") + 1,
-                    equation.LastIndexOf("\"") - equation.IndexOf("\"") - 1).Trim();
+                int s = equation.IndexOf("\"") + 1;
+                int e = equation.IndexOf("=");
+                string name = equation.Substring(s, e - s).Trim();
+                e = name.LastIndexOf("\"");
+                name = name.Substring(0, e).Trim();
 
                 if (name == variableName)
                 {
@@ -509,12 +552,12 @@ namespace HotRunner
         }
 
         /// <summary>
-        /// 不加引号
+        /// 函数不在=后面加上引号，用于方程式
         /// </summary>
         /// <param name="swApp"></param>
         /// <param name="variableName"></param>
         /// <param name="value"></param>
-        public static void SetGlobalVariable2(this SldWorks swApp, string variableName, string value)
+        public static void SetFunction(this SldWorks swApp, string variableName, string value)
         {
             ModelDoc2 swDoc = (ModelDoc2)swApp.ActiveDoc;
 
@@ -530,8 +573,11 @@ namespace HotRunner
                 if (equation == null || !equation.Contains("\"") || !equation.Contains("="))
                     continue;
 
-                string name = equation.Substring(equation.IndexOf("\"") + 1,
-                    equation.LastIndexOf("\"") - equation.IndexOf("\"") - 1).Trim();
+                int s = equation.IndexOf("\"") + 1;
+                int e = equation.IndexOf("=");
+                string name = equation.Substring(s, e - s).Trim();
+                e = name.LastIndexOf("\"");
+                name = name.Substring(0, e).Trim();
 
                 if (name == variableName)
                 {
